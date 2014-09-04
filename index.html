@@ -15,10 +15,22 @@ function listener() {
 	var reader = new FileReader();
 
 	reader.onloadend = function(evt) {
-      if (evt.target.readyState == FileReader.DONE) { // DONE == 2
-        document.getElementById('byte_content').textContent = evt.target.result;
-      }
-    };
+		if (evt.target.readyState == FileReader.DONE) {
+			// document.getElementById('byte_content').textContent = evt.target.result;
+			var pattern = /\s+/;
+			var array = evt.target.result.split(pattern);
+			// console.log(array);
+			var list = document.createElement("ul");
+			var body = document.body;
+			body.appendChild(list);
+
+			for (var i = 1; i < array.length; i++) {
+				var tmp = document.createElement("li");
+				tmp.textContent = array[i];
+				list.appendChild(tmp);
+			};
+		}
+	};
 
 	reader.readAsBinaryString(file);
 }
