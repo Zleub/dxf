@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Test</title>
+</head>
+
+<body>
+<input type="file" id="files" name="file" />
+<div id="byte_content"></div>
+
+
+<script>
+function listener() {
+	var file = document.getElementById("files").files[0];
+	var reader = new FileReader();
+
+	reader.onloadend = function(evt) {
+      if (evt.target.readyState == FileReader.DONE) { // DONE == 2
+        document.getElementById('byte_content').textContent = evt.target.result;
+      }
+    };
+
+	reader.readAsBinaryString(file);
+}
+
+document.getElementById("files").addEventListener("change", listener);
+</script>
+</body>
+
+</html>
