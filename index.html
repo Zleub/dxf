@@ -22,6 +22,10 @@ function listener() {
 		if (evt.target.readyState == FileReader.DONE) {
 			var pattern = /\r\n|\r|\n */g;
 			var array = evt.target.result.split(pattern);
+			for (var i = 1; i < array.length; i++) {
+				array[i] = array[i].trim()
+			}
+
 
 			console.log(array);
 
@@ -44,13 +48,22 @@ function listener() {
 					count1.push([]);
 					while (array[i] != "ENDBLK")
 					{
-						count1[i2].push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
+						count1[i2].push(i.toString() + ": " + array[i - 1] + ":\t" + array[i]);
 						i += 2;
 					}
 					// count1.push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
 				}
 				else if (array[i] == "LAYER")
-					count2.push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
+				{
+					i2 = count1.length;
+					count2.push([]);
+					while (array[i - 1] != "0" && array[i] != "LAYER")
+					{
+						count2[i2].push(i.toString() + ": " + array[i - 1] + ":\t" + array[i]);
+						i += 2;
+					}
+					// count2.push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
+				}
 
 			};
 
