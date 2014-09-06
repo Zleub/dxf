@@ -12,13 +12,15 @@
 
 
 <script>
+// function test()
+
 function listener() {
 	var file = document.getElementById("files").files[0];
 	var reader = new FileReader();
 
 	reader.onloadend = function(evt) {
 		if (evt.target.readyState == FileReader.DONE) {
-			var pattern = /\s+/;
+			var pattern = /\r\n|\r|\n */g;
 			var array = evt.target.result.split(pattern);
 
 			console.log(array);
@@ -33,16 +35,34 @@ function listener() {
 			// var body = document.body;
 			// body.appendChild(list);
 
+			var i2 = 0;
+			for (var i = 1; i < array.length; i++) {
+				// console.log(array[i]);
+				if (array[i] == "BLOCK")
+				{
+					i2 = count1.length;
+					count1.push([]);
+					while (array[i] != "ENDBLK")
+					{
+						count1[i2].push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
+						i += 2;
+					}
+					// count1.push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
+				}
+				else if (array[i] == "LAYER")
+					count2.push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
+
+			};
+
 			var merde = document.getElementById("merde");
 
 		}
+		console.log(count1);
+		console.log(count2);
+		console.log(count3);
 	};
 
 
-			console.log(count1);
-			console.log(count2);
-			console.log(count3);
-		}
 
 	reader.readAsBinaryString(file);
 }
