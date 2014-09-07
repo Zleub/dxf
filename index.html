@@ -6,13 +6,21 @@
 
 <body>
 <input type="file" id="files" name="file" />
-<div id="byte_content"></div>
 
-<merde id="merde"></merde>
+<button id="h_merde">hidden merde</button>
 
+<div id="merde" hidden></div>
+<br>
+<canvas id="canvas"></canvas>
 
 <script>
 // function test()
+
+var count1 = [];
+var count2 = [];
+var count3 = [];
+
+var merde = document.getElementById("merde");
 
 function listener() {
 	var file = document.getElementById("files").files[0];
@@ -31,10 +39,6 @@ function listener() {
 
 			pattern = /^[A-Z]+$/;
 
-			var count1 = [];
-			var count2 = [];
-			var count3 = [];
-
 			// var list = document.createElement("ul");
 			// var body = document.body;
 			// body.appendChild(list);
@@ -46,11 +50,16 @@ function listener() {
 				{
 					i2 = count1.length;
 					count1.push([]);
+					var list = document.createElement("ul");
 					while (array[i] != "ENDBLK")
 					{
 						count1[i2].push(i.toString() + ": " + array[i - 1] + ":\t" + array[i]);
+						var elem = document.createElement("li");
+						elem.innerHTML = array[i - 1] + ":&nbsp;&nbsp;" + array[i];
+						list.appendChild(elem);
 						i += 2;
 					}
+					merde.appendChild(list);
 					// count1.push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
 				}
 				else if (array[i] == "LAYER")
@@ -64,23 +73,25 @@ function listener() {
 					}
 					// count2.push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
 				}
-
 			};
-
-			var merde = document.getElementById("merde");
-
 		}
 		console.log(count1);
 		console.log(count2);
 		console.log(count3);
 	};
 
-
-
 	reader.readAsBinaryString(file);
 }
 
+function m_merde() {
+	if (merde.hasAttribute("hidden"))
+		merde.removeAttribute("hidden");
+	else
+		merde.setAttribute("hidden", "");
+}
+
 document.getElementById("files").addEventListener("change", listener);
+document.getElementById("h_merde").addEventListener("click", m_merde);
 </script>
 </body>
 
