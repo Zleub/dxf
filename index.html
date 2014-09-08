@@ -2,16 +2,30 @@
 <html>
 <head>
 <title>Test</title>
+<style type="text/css">
+.test
+{
+	display: inline-table;
+}
+
+.c_canvas
+{
+	border: 1px solid red;
+}
+
+</style>
 </head>
 
 <body>
 <input type="file" id="files" name="file" />
 
-<button id="h_merde">hidden merde</button>
+<button id="b_block_lists">hidden block_lists</button>
+<button id="b_canvas">hidden block_lists_canvas</button>
 
-<div id="merde" hidden></div>
+<div id="block_lists" hidden></div>
 <br>
-<canvas id="canvas"></canvas>
+
+<!-- <canvas id="canvas"></canvas> -->
 
 <script>
 // function test()
@@ -20,7 +34,7 @@ var count1 = [];
 var count2 = [];
 var count3 = [];
 
-var merde = document.getElementById("merde");
+var merde = document.getElementById("block_lists");
 
 function listener() {
 	var file = document.getElementById("files").files[0];
@@ -34,14 +48,7 @@ function listener() {
 				array[i] = array[i].trim()
 			}
 
-
 			console.log(array);
-
-			pattern = /^[A-Z]+$/;
-
-			// var list = document.createElement("ul");
-			// var body = document.body;
-			// body.appendChild(list);
 
 			var i2 = 0;
 			for (var i = 1; i < array.length; i++) {
@@ -50,16 +57,26 @@ function listener() {
 				{
 					i2 = count1.length;
 					count1.push([]);
+
+					var div = document.createElement("div");0
+					div.setAttribute("class", "test");
 					var list = document.createElement("ul");
+					var canvas = document.createElement("canvas");
+					canvas.setAttribute("class", "c_canvas");
+					div.appendChild(canvas);
+					div.appendChild(list);
 					while (array[i] != "ENDBLK")
 					{
 						count1[i2].push(i.toString() + ": " + array[i - 1] + ":\t" + array[i]);
+
 						var elem = document.createElement("li");
 						elem.innerHTML = array[i - 1] + ":&nbsp;&nbsp;" + array[i];
 						list.appendChild(elem);
+
 						i += 2;
 					}
-					merde.appendChild(list);
+					merde.appendChild(div);
+
 					// count1.push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
 				}
 				else if (array[i] == "LAYER")
@@ -91,7 +108,7 @@ function m_merde() {
 }
 
 document.getElementById("files").addEventListener("change", listener);
-document.getElementById("h_merde").addEventListener("click", m_merde);
+document.getElementById("b_block_lists").addEventListener("click", m_merde);
 </script>
 </body>
 
