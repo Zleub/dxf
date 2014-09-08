@@ -60,9 +60,15 @@ function listener() {
 
 					var div = document.createElement("div");0
 					div.setAttribute("class", "test");
+
 					var list = document.createElement("ul");
+
 					var canvas = document.createElement("canvas");
 					canvas.setAttribute("class", "c_canvas");
+					canvas.setAttribute("width", "400");
+					canvas.setAttribute("height", "300");
+
+					// add element
 					div.appendChild(canvas);
 					div.appendChild(list);
 					while (array[i] != "ENDBLK")
@@ -72,6 +78,13 @@ function listener() {
 						var elem = document.createElement("li");
 						elem.innerHTML = array[i - 1] + ":&nbsp;&nbsp;" + array[i];
 						list.appendChild(elem);
+
+						var ctx = canvas.getContext("2d");
+						if (array[i - 1] == "10")
+							point1 = array[i];
+						else if (array[i - 1] == "20")
+							point2 = array[i];
+
 
 						i += 2;
 					}
