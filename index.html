@@ -10,7 +10,7 @@
 
 .c_canvas
 {
-	border: 1px solid red;
+	border: 1px dashed red;
 }
 
 </style>
@@ -31,8 +31,10 @@
 // function test()
 
 var count1 = [];
-var count2 = [];
-var count3 = [];
+var primarypoint_byblock = [];
+var secondpoint_byblock = [];
+var tiercepoint_byblock = [];
+var quadrapoint_byblock = [];
 
 var merde = document.getElementById("block_lists");
 
@@ -53,6 +55,8 @@ function listener() {
 			var i2 = 0;
 			for (var i = 1; i < array.length; i++) {
 				// console.log(array[i]);
+				var draw = 0;
+
 				if (array[i] == "BLOCK")
 				{
 					i2 = count1.length;
@@ -65,49 +69,100 @@ function listener() {
 
 					var canvas = document.createElement("canvas");
 					canvas.setAttribute("class", "c_canvas");
-					canvas.setAttribute("width", "400");
-					canvas.setAttribute("height", "300");
+					canvas.setAttribute("width", "1600");
+					canvas.setAttribute("height", "1200");
 
 					// add element
-					div.appendChild(canvas);
-					div.appendChild(list);
+
+					var x1 = 0;
+					var y1 = 0;
+					var x2 = 0;
+					var y2 = 0;
+
+					var nbr2 = primarypoint_byblock.length;
+					primarypoint_byblock.push([]);
+					var nbr3 = secondpoint_byblock.length;
+					secondpoint_byblock.push([]);
+					var nbr4 = tiercepoint_byblock.length;
+					tiercepoint_byblock.push([]);
+					var nbr5 = quadrapoint_byblock.length;
+					quadrapoint_byblock.push([]);
+
+
+
+					var primarynumber = 0;
+					var secondnumber = 0;
+					var tiercenumber = 0;
+					var quadranumber = 0;
+
 					while (array[i] != "ENDBLK")
 					{
 						count1[i2].push(i.toString() + ": " + array[i - 1] + ":\t" + array[i]);
 
 						var elem = document.createElement("li");
 						elem.innerHTML = array[i - 1] + ":&nbsp;&nbsp;" + array[i];
-						list.appendChild(elem);
+						// list.appendChild(elem);
 
 						var ctx = canvas.getContext("2d");
 						if (array[i - 1] == "10")
-							point1 = array[i];
+						{
+							primarynumber = primarypoint_byblock[nbr2].length;
+							primarypoint_byblock[nbr2].push(array[i]);
+						}
 						else if (array[i - 1] == "20")
-							point2 = array[i];
+						{
+							secondnumber = secondpoint_byblock[nbr2].length;
+							secondpoint_byblock[nbr2].push(array[i]);
+							ctx.fillStyle="#00FF00";
+							ctx.fillRect(600 - primarypoint_byblock[nbr2][primarynumber], 400 - secondpoint_byblock[nbr2][secondnumber], 1, 1);
+							ctx.moveTo(600 - primarypoint_byblock[nbr2][primarynumber], 400 - secondpoint_byblock[nbr2][secondnumber]);
+							draw = 1;
+						}
+						else if (array[i - 1] == "11")
+						{
+							tiercenumber = tiercepoint_byblock[nbr4].length;
+							tiercepoint_byblock[nbr4].push(array[i]);
+						}
+						else if (array[i - 1] == "21")
+						{
+							quadranumber = quadrapoint_byblock[nbr5].length;
+							quadrapoint_byblock[nbr5].push(array[i]);
+							ctx.fillStyle="#FF0000";
+							ctx.fillRect(600 - tiercepoint_byblock[nbr4][tiercenumber], 400 - quadrapoint_byblock[nbr5][quadranumber], 1, 1);
+							ctx.lineTo(600 - tiercepoint_byblock[nbr4][tiercenumber], 400 - quadrapoint_byblock[nbr5][quadranumber]);
+							ctx.stroke();
+							draw = 1;
+						}
 
 
 						i += 2;
 					}
+					// console.log("1: " + x1.toString() + " : " + y1.toString());
+					// console.log("2: " + x2.toString() + " : " + y2.toString());
+					if (draw != 0)
+						div.appendChild(canvas);
+					div.appendChild(list);
+
 					merde.appendChild(div);
 
 					// count1.push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
 				}
-				else if (array[i] == "LAYER")
-				{
-					i2 = count1.length;
-					count2.push([]);
-					while (array[i - 1] != "0" && array[i] != "LAYER")
-					{
-						count2[i2].push(i.toString() + ": " + array[i - 1] + ":\t" + array[i]);
-						i += 2;
-					}
-					// count2.push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
-				}
+				// else if (array[i] == "LAYER")
+				// {
+				// 	i2 = count1.length;
+				// 	count2.push([]);
+				// 	while (array[i - 1] != "0" && array[i] != "LAYER")
+				// 	{
+				// 		count2[i2].push(i.toString() + ": " + array[i - 1] + ":\t" + array[i]);
+				// 		i += 2;
+				// 	}
+				// 	// count2.push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
+				// }
 			};
 		}
 		console.log(count1);
-		console.log(count2);
-		console.log(count3);
+		console.log(primarypoint_byblock);
+		console.log(secondpoint_byblock);
 	};
 
 	reader.readAsBinaryString(file);
