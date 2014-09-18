@@ -19,21 +19,16 @@
 <body>
 <input type="file" id="files" name="file" />
 
-<button id="b_block_lists">hidden block_lists</button>
-<button id="b_canvas">hidden block_lists_canvas</button>
+<button id="b_block_lists">show block_lists</button>
 
 <div id="block_lists" hidden></div>
 <br>
 
-<!-- <canvas id="canvas"></canvas> -->
-
 <script>
-// function test()
-
 var count1 = [];
 var points = [];
 
-var merde = document.getElementById("block_lists");
+var block_list = document.getElementById("block_lists");
 
 function listener() {
 	var file = document.getElementById("files").files[0];
@@ -46,15 +41,9 @@ function listener() {
 			for (var i = 1; i < array.length; i++) {
 				array[i] = array[i].trim()
 			}
-
-			// console.log(array);
-
 			var i2 = 0;
 			for (var i = 1; i < array.length; i++) {
-				// console.log(array[i]);
-
-				if (array[i] == "BLOCK")
-				{
+				if (array[i] == "BLOCK") {
 					i2 = count1.length;
 					count1.push([]);
 
@@ -62,24 +51,16 @@ function listener() {
 					div.setAttribute("class", "test");
 
 					var list = document.createElement("ul");
-
 					var canvas = document.createElement("canvas");
 					canvas.setAttribute("class", "c_canvas");
 					canvas.setAttribute("width", "1600");
 					canvas.setAttribute("height", "1200");
 
 					var ctx = canvas.getContext("2d");
-					// add element
-
 					var points_nbr = points.length;
 
-					while (array[i] != "ENDBLK")
-					{
+					while (array[i] != "ENDBLK") {
 						count1[i2].push(i.toString() + ": " + array[i - 1] + ":\t" + array[i]);
-
-						var elem = document.createElement("li");
-						elem.innerHTML = array[i - 1] + ":&nbsp;&nbsp;" + array[i];
-						// list.appendChild(elem);
 
 						if (array[i - 1] == "10") {
 							points_nbr = points.length;
@@ -88,7 +69,6 @@ function listener() {
 						}
 						else if (array[i - 1] == "20") {
 							points[points_nbr].y1 = array[i];
-
 							ctx.fillStyle="#00FF00";
 							ctx.fillRect(canvas.width / 2 - points[points_nbr].x1 / 1, canvas.height / 2 - points[points_nbr].y1 / 1, 1, 1);
 							ctx.moveTo(canvas.width / 2 - points[points_nbr].x1 / 1, canvas.height / 2 - points[points_nbr].y1 / 1);
@@ -103,31 +83,20 @@ function listener() {
 							ctx.lineTo(canvas.width / 2 - points[points_nbr].x2 / 1, canvas.height / 2 - points[points_nbr].y2 / 1);
 							ctx.stroke();
 						}
-						// else if (array[i - 1] == "12") {
-						// 	points_nbr = points.length;
-						// 	points[points_nbr].x1 = array[i];
-						// }
-						// else if (array[i - 1] == "22") {
-						// 	points[points_nbr].y1 = array[i];
-
-						// 	ctx.fillStyle="#00FF00";
-						// 	ctx.fillRect(canvas.width / 2 - points[points_nbr].x1, canvas.height / 2 - points[points_nbr].y1, 1, 1);
-						// 	ctx.moveTo(canvas.width / 2 - points[points_nbr].x1, canvas.height / 2 - points[points_nbr].y1);
-						// }
-						else if (array[i - 1] == "13") {
+						else if (array[i - 1] == "12") {
 							points[points_nbr].x3 = array[i];
 						}
-						else if (array[i - 1] == "23") {
+						else if (array[i - 1] == "22") {
 							points[points_nbr].y3 = array[i];
 							ctx.fillStyle="#FF0000";
 							ctx.fillRect(canvas.width / 2 - points[points_nbr].x3 / 10, canvas.height / 2 - points[points_nbr].y3 / 10, 1, 1);
 							ctx.moveTo(canvas.width / 2 - points[points_nbr].x3 / 10, canvas.height / 2 - points[points_nbr].y3 / 10);
 							ctx.stroke();
 						}
-						else if (array[i - 1] == "14") {
+						else if (array[i - 1] == "13") {
 							points[points_nbr].x4 = array[i];
 						}
-						else if (array[i - 1] == "24") {
+						else if (array[i - 1] == "23") {
 							points[points_nbr].y4 = array[i];
 							ctx.fillStyle="#FF0000";
 							ctx.fillRect(canvas.width / 2 - points[points_nbr].x4 / 10, canvas.height / 2 - points[points_nbr].y4 / 10, 1, 1);
@@ -137,44 +106,29 @@ function listener() {
 						}
 						i += 2;
 					}
-					// console.log("1: " + x1.toString() + " : " + y1.toString());
-					// console.log("2: " + x2.toString() + " : " + y2.toString());
 					div.appendChild(canvas);
 					div.appendChild(list);
 
-					merde.appendChild(div);
-
-					// count1.push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
+					block_list.appendChild(div);
 				}
-				// else if (array[i] == "LAYER")
-				// {
-				// 	i2 = count1.length;
-				// 	count2.push([]);
-				// 	while (array[i - 1] != "0" && array[i] != "LAYER")
-				// 	{
-				// 		count2[i2].push(i.toString() + ": " + array[i - 1] + ":\t" + array[i]);
-				// 		i += 2;
-				// 	}
-				// 	// count2.push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
-				// }
-			};
-		}
+			}
 		console.log(count1);
 		console.log(points);
+		}
 	};
 
 	reader.readAsBinaryString(file);
 }
 
-function m_merde() {
-	if (merde.hasAttribute("hidden"))
-		merde.removeAttribute("hidden");
+function m_block_list() {
+	if (block_list.hasAttribute("hidden"))
+		block_list.removeAttribute("hidden");
 	else
-		merde.setAttribute("hidden", "");
+		block_list.setAttribute("hidden", "");
 }
 
 document.getElementById("files").addEventListener("change", listener);
-document.getElementById("b_block_lists").addEventListener("click", m_merde);
+document.getElementById("b_block_lists").addEventListener("click", m_block_list);
 </script>
 </body>
 
