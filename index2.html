@@ -17,11 +17,14 @@
 </head>
 
 <body>
-<input type="file" id="files" name="file" />
+<input class="test" type="file" id="files" name="file" />
 
-<button id="b_block_lists">show block_lists</button>
+<div class="test">
+block[<span id="number" contenteditable>10</span>] =>
+<button id="b_block">draw block</button>
+</div>
 
-<div id="block_lists" hidden></div>
+<div id="block"></div>
 <br>
 
 <script>
@@ -29,10 +32,8 @@ function log(object) {
 	console.log(object);
 }
 
-var count1 = [];
-var points = [];
-
-var block_list = document.getElementById("block_lists");
+var blockElem = document.getElementById("block");
+var numberElem = document.getElementById("number");
 
 function ft_createdxf() {
 	return {
@@ -46,11 +47,21 @@ function ft_createdxf() {
 	}
 }
 
-// function ft_create_block(style) {
-// 	return {
+function ft_createformat(key, value) {
+	return {
+		key: key,
+		value: value
+	}
+}
 
-// 	}
-// }
+function ft_createline(x1, y1, x2, y2) {
+	return {
+		x1: x1,
+		y1: y1,
+		x2: x2,
+		y2: y2
+	}
+}
 
 function ft_toarray(read) {
 	var pattern = /\r\n|\r|\n */g;
@@ -66,117 +77,102 @@ function ft_toobject(dxf_array) {
 	var dxf_object = ft_createdxf();
 
 	while (i < dxf_array.length) {
-		if (dxf_array[i] == "BLOCK") {
+		if (dxf_array[i] == "0" && dxf_array[i + 1] == "BLOCK") {
 			tmp = dxf_object.blocks.length;
 			dxf_object.blocks.push([]);
-			while (dxf_array[i] != "ENDBLK") {
-				dxf_object.blocks[tmp].push(dxf_array[i]);
-				i += 1;
+			while (dxf_array[i - 1] != "ENDBLK") {
+				dxf_object.blocks[tmp].push(ft_createformat(dxf_array[i], dxf_array[i + 1]));
+				i += 2;
 			}
 		}
-		i += 1;
+		i += 2;
 	}
 	return dxf_object;
 }
 
-function onreadend(evt) {
+function ft_onreadend(evt) {
 	if (evt.target.readyState == FileReader.DONE) {
 		var array = ft_toarray(evt.target.result);
-		var object = ft_toobject(array);
-		test = object;
-
-		// var i2 = 0;
-		// for (var i = 1; i < array.length; i++) {
-		// 	if (array[i] == "BLOCK") {
-		// 		i2 = count1.length;
-		// 		count1.push([]);
-
-		// 		var div = document.createElement("div");0
-		// 		div.setAttribute("class", "test");
-		// 		var list = document.createElement("ul");
-		// 		var canvas = document.createElement("canvas");
-		// 		canvas.setAttribute("class", "c_canvas");
-		// 		canvas.setAttribute("width", "1600");
-		// 		canvas.setAttribute("height", "1200");
-
-		// 		var ctx = canvas.getContext("2d");
-		// 		var points_nbr = points.length;
-
-		// 		while (array[i] != "ENDBLK") {
-		// 			count1[i2].push(i.toString() + ": " + array[i - 1] + ":\t" + array[i]);
-		// 			if (array[i - 1] == "10") {
-		// 				points_nbr = points.length;
-		// 				points.push({x1: 0, y1: 0, x2: 0, y2: 0, x3: 0, y3: 0, x4: 0, y4: 0});
-		// 				points[points_nbr].x1 = array[i];
-		// 			}
-		// 			else if (array[i - 1] == "20") {
-		// 				points[points_nbr].y1 = array[i];
-		// 				ctx.fillStyle="#00FF00";
-		// 				ctx.fillRect(canvas.width / 2 - points[points_nbr].x1 / 1, canvas.height / 2 - points[points_nbr].y1 / 1, 1, 1);
-		// 				ctx.moveTo(canvas.width / 2 - points[points_nbr].x1 / 1, canvas.height / 2 - points[points_nbr].y1 / 1);
-		// 			}
-		// 			else if (array[i - 1] == "11") {
-		// 				points[points_nbr].x2 = array[i];
-		// 			}
-		// 			else if (array[i - 1] == "21") {
-		// 				points[points_nbr].y2 = array[i];
-		// 				ctx.fillStyle="#FF0000";
-		// 				ctx.fillRect(canvas.width / 2 - points[points_nbr].x1 / 1, canvas.height / 2 - points[points_nbr].y1 / 1, 1, 1);
-		// 				ctx.lineTo(canvas.width / 2 - points[points_nbr].x2 / 1, canvas.height / 2 - points[points_nbr].y2 / 1);
-		// 				ctx.stroke();
-		// 			}
-		// 			else if (array[i - 1] == "12") {
-		// 				points[points_nbr].x3 = array[i];
-		// 			}
-		// 			else if (array[i - 1] == "22") {
-		// 				points[points_nbr].y3 = array[i];
-		// 				ctx.fillStyle="#FF0000";
-		// 				ctx.fillRect(canvas.width / 2 - points[points_nbr].x3 / 10, canvas.height / 2 - points[points_nbr].y3 / 10, 1, 1);
-		// 				ctx.moveTo(canvas.width / 2 - points[points_nbr].x3 / 10, canvas.height / 2 - points[points_nbr].y3 / 10);
-		// 				ctx.stroke();
-		// 			}
-		// 			else if (array[i - 1] == "13") {
-		// 				points[points_nbr].x4 = array[i];
-		// 			}
-		// 			else if (array[i - 1] == "23") {
-		// 				points[points_nbr].y4 = array[i];
-		// 				ctx.fillStyle="#FF0000";
-		// 				ctx.fillRect(canvas.width / 2 - points[points_nbr].x4 / 10, canvas.height / 2 - points[points_nbr].y4 / 10, 1, 1);
-		// 				ctx.lineTo(canvas.width / 2 - points[points_nbr].x4 / 10, canvas.height / 2 - points[points_nbr].y4 / 10);
-		// 				ctx.stroke();
-		// 			}
-		// 			i += 2;
-		// 		}
-
-		// 		div.appendChild(canvas);
-		// 		div.appendChild(list);
-		// 		block_list.appendChild(div);
-		// 	}
-		// }
-
-
-	// console.log(count1);
-	// console.log(points);
+		object = ft_toobject(array);
 	}
 }
 
-function listener() {
+function ft_listener() {
 	var file = document.getElementById("files").files[0];
 	var reader = new FileReader();
 
-	reader.onloadend = onreadend;
+	reader.onloadend = ft_onreadend;
 	reader.readAsBinaryString(file);
 }
 
-function m_block_list() {
-	if (block_list.hasAttribute("hidden"))
-		block_list.removeAttribute("hidden");
-	else
-		block_list.setAttribute("hidden", "");
+function ft_getline(lines_array, block, i) {
+	var line = ft_createline();
+
+	while (block[i].key != '0') {
+		if (block[i].key == "10")
+			line.x1 = parseInt(block[i].value);
+		else if (block[i].key == "20")
+			line.y1 = parseInt(block[i].value);
+		else if (block[i].key == "11")
+			line.x2 = parseInt(block[i].value);
+		else if (block[i].key == "21")
+			line.y2 = parseInt(block[i].value);
+		i += 1;
+	}
+	lines_array.push(line);
+	return i;
 }
 
-document.getElementById("files").addEventListener("change", listener);
-document.getElementById("b_block_lists").addEventListener("click", m_block_list);
+function ft_draw_block(canvas, block) {
+	var lines_array = [];
+	var ctx = canvas.getContext("2d");
+
+	if (typeof block == "undefined") {
+		log("no block");
+		return
+	}
+
+	for (var i = 0; i < block.length; i++) {
+		log(block[i]);
+		if (block[i].key == '0')
+			if (block[i].value == 'LINE')
+				i = ft_getline(lines_array, block, i + 1) - 1;
+	};
+	log("\n\n\n");
+	log(lines_array);
+}
+
+function ft_block() {
+	var canvas = document.createElement("canvas");
+	canvas.setAttribute("class", "c_canvas");
+	canvas.setAttribute("width", "1600");
+	canvas.setAttribute("height", "1200");
+
+	if (blockElem.childElementCount == 0)
+		blockElem.appendChild(canvas);
+	else {
+		blockElem.removeChild(blockElem.firstChild);
+		blockElem.appendChild(canvas);
+	}
+	var nbr = parseInt(numberElem.textContent);
+	if (typeof object != "undefined")
+		ft_draw_block(canvas, object.blocks[nbr]);
+	else
+		log("no dxf");
+}
+
+function ft_epur() {
+	var tmp = numberElem.textContent;
+	tmp = tmp.replace(" ", "");
+	tmp = tmp.replace("\t", "");
+	tmp = tmp.replace("\n", "");
+	tmp = tmp.replace("\r", "");
+	numberElem.textContent = tmp;
+}
+
+document.getElementById("files").addEventListener("change", ft_listener);
+document.getElementById("number").addEventListener("input", ft_epur);
+document.getElementById("b_block").addEventListener("click", ft_block);
 
 // var test = ft_createdxf();
 // console.log(test);
