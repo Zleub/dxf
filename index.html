@@ -17,164 +17,89 @@
 </head>
 
 <body>
-<input type="file" id="files" name="file" />
+<input class="test" type="file" id="files" name="file" />
 
-<button id="b_block_lists">hidden block_lists</button>
-<button id="b_canvas">hidden block_lists_canvas</button>
+<div class="test">
+block[<span id="number" contenteditable>10</span>] =>
+<button id="b_block">draw block</button>
+</div>
 
-<div id="block_lists" hidden></div>
+<div id="block"></div>
 <br>
 
-<!-- <canvas id="canvas"></canvas> -->
+<script src="ft_objects.js"></script>
+<script src="ft_conversions.js"></script>
+<script src="ft_listeners.js"></script>
 
 <script>
-// function test()
 
-var count1 = [];
-var points = [];
+function log(object) {
+	console.log(object);
+}
 
-var merde = document.getElementById("block_lists");
+var blockElem = document.getElementById("block");
+var numberElem = document.getElementById("number");
 
-function listener() {
-	var file = document.getElementById("files").files[0];
-	var reader = new FileReader();
+function ft_getline(lines_array, block, i) {
+	var line = ft_createline();
 
-	reader.onloadend = function(evt) {
-		if (evt.target.readyState == FileReader.DONE) {
-			var pattern = /\r\n|\r|\n */g;
-			var array = evt.target.result.split(pattern);
-			for (var i = 1; i < array.length; i++) {
-				array[i] = array[i].trim()
-			}
+	while (block[i].key != '0') {
+		log(block[i]);
+		if (block[i].key == "10")
+			line.x1 = parseInt(block[i].value);
+		else if (block[i].key == "20")
+			line.y1 = parseInt(block[i].value);
+		else if (block[i].key == "11")
+			line.x2 = parseInt(block[i].value);
+		else if (block[i].key == "21")
+			line.y2 = parseInt(block[i].value);
+		i += 1;
+	}
+	lines_array.push(line);
+	return i;
+}
 
-			// console.log(array);
-
-			var i2 = 0;
-			for (var i = 1; i < array.length; i++) {
-				// console.log(array[i]);
-
-				if (array[i] == "BLOCK")
-				{
-					i2 = count1.length;
-					count1.push([]);
-
-					var div = document.createElement("div");0
-					div.setAttribute("class", "test");
-
-					var list = document.createElement("ul");
-
-					var canvas = document.createElement("canvas");
-					canvas.setAttribute("class", "c_canvas");
-					canvas.setAttribute("width", "1600");
-					canvas.setAttribute("height", "1200");
-
-					var ctx = canvas.getContext("2d");
-					// add element
-
-					var points_nbr = points.length;
-
-					while (array[i] != "ENDBLK")
-					{
-						count1[i2].push(i.toString() + ": " + array[i - 1] + ":\t" + array[i]);
-
-						var elem = document.createElement("li");
-						elem.innerHTML = array[i - 1] + ":&nbsp;&nbsp;" + array[i];
-						// list.appendChild(elem);
-
-						if (array[i - 1] == "10") {
-							points_nbr = points.length;
-							points.push({x1: 0, y1: 0, x2: 0, y2: 0, x3: 0, y3: 0, x4: 0, y4: 0});
-							points[points_nbr].x1 = array[i];
-						}
-						else if (array[i - 1] == "20") {
-							points[points_nbr].y1 = array[i];
-
-							ctx.fillStyle="#00FF00";
-							ctx.fillRect(canvas.width / 2 - points[points_nbr].x1 / 1, canvas.height / 2 - points[points_nbr].y1 / 1, 1, 1);
-							ctx.moveTo(canvas.width / 2 - points[points_nbr].x1 / 1, canvas.height / 2 - points[points_nbr].y1 / 1);
-						}
-						else if (array[i - 1] == "11") {
-							points[points_nbr].x2 = array[i];
-						}
-						else if (array[i - 1] == "21") {
-							points[points_nbr].y2 = array[i];
-							ctx.fillStyle="#FF0000";
-							ctx.fillRect(canvas.width / 2 - points[points_nbr].x1 / 1, canvas.height / 2 - points[points_nbr].y1 / 1, 1, 1);
-							ctx.lineTo(canvas.width / 2 - points[points_nbr].x2 / 1, canvas.height / 2 - points[points_nbr].y2 / 1);
-							ctx.stroke();
-						}
-						// else if (array[i - 1] == "12") {
-						// 	points_nbr = points.length;
-						// 	points[points_nbr].x1 = array[i];
-						// }
-						// else if (array[i - 1] == "22") {
-						// 	points[points_nbr].y1 = array[i];
-
-						// 	ctx.fillStyle="#00FF00";
-						// 	ctx.fillRect(canvas.width / 2 - points[points_nbr].x1, canvas.height / 2 - points[points_nbr].y1, 1, 1);
-						// 	ctx.moveTo(canvas.width / 2 - points[points_nbr].x1, canvas.height / 2 - points[points_nbr].y1);
-						// }
-						else if (array[i - 1] == "13") {
-							points[points_nbr].x3 = array[i];
-						}
-						else if (array[i - 1] == "23") {
-							points[points_nbr].y3 = array[i];
-							ctx.fillStyle="#FF0000";
-							ctx.fillRect(canvas.width / 2 - points[points_nbr].x3 / 10, canvas.height / 2 - points[points_nbr].y3 / 10, 1, 1);
-							ctx.moveTo(canvas.width / 2 - points[points_nbr].x3 / 10, canvas.height / 2 - points[points_nbr].y3 / 10);
-							ctx.stroke();
-						}
-						else if (array[i - 1] == "14") {
-							points[points_nbr].x4 = array[i];
-						}
-						else if (array[i - 1] == "24") {
-							points[points_nbr].y4 = array[i];
-							ctx.fillStyle="#FF0000";
-							ctx.fillRect(canvas.width / 2 - points[points_nbr].x4 / 10, canvas.height / 2 - points[points_nbr].y4 / 10, 1, 1);
-							ctx.lineTo(canvas.width / 2 - points[points_nbr].x4 / 10, canvas.height / 2 - points[points_nbr].y4 / 10);
-							ctx.stroke();
-
-						}
-						i += 2;
-					}
-					// console.log("1: " + x1.toString() + " : " + y1.toString());
-					// console.log("2: " + x2.toString() + " : " + y2.toString());
-					div.appendChild(canvas);
-					div.appendChild(list);
-
-					merde.appendChild(div);
-
-					// count1.push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
-				}
-				// else if (array[i] == "LAYER")
-				// {
-				// 	i2 = count1.length;
-				// 	count2.push([]);
-				// 	while (array[i - 1] != "0" && array[i] != "LAYER")
-				// 	{
-				// 		count2[i2].push(i.toString() + ": " + array[i - 1] + ":\t" + array[i]);
-				// 		i += 2;
-				// 	}
-				// 	// count2.push(i.toString() + ": " + array[i - 1] + ": " + array[i]);
-				// }
-			};
-		}
-		console.log(count1);
-		console.log(points);
+function ft_filllines(lines_array, block) {
+	for (var i = 0; i < block.length; i++) {
+		if (block[i].key == '0')
+			if (block[i].value == 'LINE')
+				i = ft_getline(lines_array, block, i + 1) - 1;
 	};
-
-	reader.readAsBinaryString(file);
 }
 
-function m_merde() {
-	if (merde.hasAttribute("hidden"))
-		merde.removeAttribute("hidden");
-	else
-		merde.setAttribute("hidden", "");
+function ft_draw_block(canvas, block) {
+	var lines_array = [];
+	var ctx = canvas.getContext("2d");
+
+	if (typeof block == "undefined") {
+		log("no block");
+		return
+	}
+
+	ft_filllines(lines_array, block);
+	log(lines_array);
+	for (var i = 0; i < lines_array.length; i++) {
+		ctx.moveTo(lines_array[i].x1 / 2, lines_array[i].y1 / 2);
+		ctx.lineTo(lines_array[i].x2 / 2, lines_array[i].y2 / 2);
+		ctx.stroke();
+		// I NEED SOME SCALE / CENTERIZATION HERE
+	};
 }
 
-document.getElementById("files").addEventListener("change", listener);
-document.getElementById("b_block_lists").addEventListener("click", m_merde);
+function ft_onreadend(evt) {
+	if (evt.target.readyState == FileReader.DONE) {
+		var array = ft_toarray(evt.target.result);
+		object = ft_toobject(array);
+	}
+}
+
+document.getElementById("files").addEventListener("change", ft_listener);
+document.getElementById("number").addEventListener("input", ft_epur);
+document.getElementById("b_block").addEventListener("click", ft_block);
+
+// var test = ft_createdxf();
+// console.log(test);
+
 </script>
 </body>
 
