@@ -27,83 +27,17 @@ block[<span id="number" contenteditable>10</span>] =>
 <div id="block"></div>
 <br>
 
+<script src="ft_objects.js"></script>
+<script src="ft_conversions.js"></script>
+
 <script>
+
 function log(object) {
 	console.log(object);
 }
 
 var blockElem = document.getElementById("block");
 var numberElem = document.getElementById("number");
-
-function ft_createdxf() {
-	return {
-		header: [],
-		classes: [],
-		tables: [],
-		blocks: [],
-		entities: [],
-		objects: [],
-		thumbnailimage: []
-	}
-}
-
-function ft_createformat(key, value) {
-	return {
-		key: key,
-		value: value
-	}
-}
-
-function ft_createline(x1, y1, x2, y2) {
-	return {
-		x1: x1,
-		y1: y1,
-		x2: x2,
-		y2: y2
-	}
-}
-
-function ft_toarray(read) {
-	var pattern = /\r\n|\r|\n */g;
-	var array = read.split(pattern);
-	for (var i = 1; i < array.length; i++)
-		array[i] = array[i].trim();
-	return array;
-}
-
-function ft_toobject(dxf_array) {
-	var i = 0;
-	var i2 = 0;
-	var dxf_object = ft_createdxf();
-
-	while (i < dxf_array.length) {
-		if (dxf_array[i] == "0" && dxf_array[i + 1] == "BLOCK") {
-			tmp = dxf_object.blocks.length;
-			dxf_object.blocks.push([]);
-			while (dxf_array[i - 1] != "ENDBLK") {
-				dxf_object.blocks[tmp].push(ft_createformat(dxf_array[i], dxf_array[i + 1]));
-				i += 2;
-			}
-		}
-		i += 2;
-	}
-	return dxf_object;
-}
-
-function ft_onreadend(evt) {
-	if (evt.target.readyState == FileReader.DONE) {
-		var array = ft_toarray(evt.target.result);
-		object = ft_toobject(array);
-	}
-}
-
-function ft_listener() {
-	var file = document.getElementById("files").files[0];
-	var reader = new FileReader();
-
-	reader.onloadend = ft_onreadend;
-	reader.readAsBinaryString(file);
-}
 
 function ft_getline(lines_array, block, i) {
 	var line = ft_createline();
@@ -123,6 +57,15 @@ function ft_getline(lines_array, block, i) {
 	return i;
 }
 
+function ft_filllines(lines_array, block) {
+	for (var i = 0; i < block.length; i++) {
+		log(block[i]);
+		if (block[i].key == '0')
+			if (block[i].value == 'LINE')
+				i = ft_getline(lines_array, block, i + 1) - 1;
+	};
+}
+
 function ft_draw_block(canvas, block) {
 	var lines_array = [];
 	var ctx = canvas.getContext("2d");
@@ -132,42 +75,17 @@ function ft_draw_block(canvas, block) {
 		return
 	}
 
-	for (var i = 0; i < block.length; i++) {
-		log(block[i]);
-		if (block[i].key == '0')
-			if (block[i].value == 'LINE')
-				i = ft_getline(lines_array, block, i + 1) - 1;
-	};
+	ft_filllines(lines_array, block);
+
 	log("\n\n\n");
 	log(lines_array);
 }
 
-function ft_block() {
-	var canvas = document.createElement("canvas");
-	canvas.setAttribute("class", "c_canvas");
-	canvas.setAttribute("width", "1600");
-	canvas.setAttribute("height", "1200");
-
-	if (blockElem.childElementCount == 0)
-		blockElem.appendChild(canvas);
-	else {
-		blockElem.removeChild(blockElem.firstChild);
-		blockElem.appendChild(canvas);
+function ft_onreadend(evt) {
+	if (evt.target.readyState == FileReader.DONE) {
+		var array = ft_toarray(evt.target.result);
+		object = ft_toobject(array);
 	}
-	var nbr = parseInt(numberElem.textContent);
-	if (typeof object != "undefined")
-		ft_draw_block(canvas, object.blocks[nbr]);
-	else
-		log("no dxf");
-}
-
-function ft_epur() {
-	var tmp = numberElem.textContent;
-	tmp = tmp.replace(" ", "");
-	tmp = tmp.replace("\t", "");
-	tmp = tmp.replace("\n", "");
-	tmp = tmp.replace("\r", "");
-	numberElem.textContent = tmp;
 }
 
 document.getElementById("files").addEventListener("change", ft_listener);
