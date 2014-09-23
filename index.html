@@ -44,7 +44,7 @@ function ft_getline(lines_array, block, i) {
 	var line = ft_createline();
 
 	while (block[i].key != '0') {
-		log(block[i]);
+		// log("ft_getline: " + block[i]);
 		if (block[i].key == "10")
 			line.x1 = parseInt(block[i].value);
 		else if (block[i].key == "20")
@@ -61,6 +61,7 @@ function ft_getline(lines_array, block, i) {
 
 function ft_filllines(lines_array, block) {
 	for (var i = 0; i < block.length; i++) {
+		log(block[i]);
 		if (block[i].key == '0')
 			if (block[i].value == 'LINE')
 				i = ft_getline(lines_array, block, i + 1) - 1;
@@ -79,8 +80,8 @@ function ft_draw_block(canvas, block) {
 	ft_filllines(lines_array, block);
 	log(lines_array);
 	for (var i = 0; i < lines_array.length; i++) {
-		ctx.moveTo(lines_array[i].x1 / 2, lines_array[i].y1 / 2);
-		ctx.lineTo(lines_array[i].x2 / 2, lines_array[i].y2 / 2);
+		ctx.moveTo(canvas.width / 2 - lines_array[i].x1, canvas.width / 2 - lines_array[i].y1);
+		ctx.lineTo(canvas.height / 2 - lines_array[i].x2, canvas.height / 2 - lines_array[i].y2);
 		ctx.stroke();
 		// I NEED SOME SCALE / CENTERIZATION HERE
 	};
@@ -96,9 +97,6 @@ function ft_onreadend(evt) {
 document.getElementById("files").addEventListener("change", ft_listener);
 document.getElementById("number").addEventListener("input", ft_epur);
 document.getElementById("b_block").addEventListener("click", ft_block);
-
-// var test = ft_createdxf();
-// console.log(test);
 
 </script>
 </body>
