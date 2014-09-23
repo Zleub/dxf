@@ -16,10 +16,7 @@ function ft_epur() {
 }
 
 function ft_block() {
-	var canvas = document.createElement("canvas");
-	canvas.setAttribute("class", "c_canvas");
-	canvas.setAttribute("width", "2000");
-	canvas.setAttribute("height", "2000");
+	var canvas = ft_createcanvas();
 
 	if (blockElem.childElementCount == 0)
 		blockElem.appendChild(canvas);

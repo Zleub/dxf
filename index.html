@@ -23,6 +23,7 @@
 block[<span id="number" contenteditable>10</span>] =>
 <button id="b_block">draw block</button>
 </div>
+<button id="b_ablock">draw all block</button>
 
 <div id="block"></div>
 <br>
@@ -59,14 +60,37 @@ function ft_getline(lines_array, block, i) {
 	return i;
 }
 
+function ft_jump(block, i) {
+	while (block[i].key != '0') {
+		i += 1;
+	}
+	return i;
+}
+
 function ft_filllines(lines_array, block) {
 	for (var i = 0; i < block.length; i++) {
+		if (block[i].key == "10" || block[i].key == "20")
 		log(block[i]);
 		if (block[i].key == '0')
 			if (block[i].value == 'LINE')
 				i = ft_getline(lines_array, block, i + 1) - 1;
+			else if (block[i].value == 'BLOCK' || block[i].value == 'ENDBLK')
+				;
+			else
+				i = ft_jump(block, i + 1) - 1;
 	};
 }
+
+function ft_sympointmatrix(canvas, line_array) {
+	return {
+		x1: line_array.x1 + 1000,
+		y1: line_array.y1 + 1000,
+		x2: line_array.x2 + 1000,
+		y2: line_array.y2 + 1000,
+	}
+}
+
+var cmp = 0;
 
 function ft_draw_block(canvas, block) {
 	var lines_array = [];
@@ -79,9 +103,13 @@ function ft_draw_block(canvas, block) {
 
 	ft_filllines(lines_array, block);
 	log(lines_array);
+
 	for (var i = 0; i < lines_array.length; i++) {
-		ctx.moveTo(canvas.width / 2 - lines_array[i].x1, canvas.width / 2 - lines_array[i].y1);
-		ctx.lineTo(canvas.height / 2 - lines_array[i].x2, canvas.height / 2 - lines_array[i].y2);
+		lines_array[i] = ft_sympointmatrix(canvas, lines_array[i]);
+		// log(lines_array[i]);
+
+		ctx.moveTo(lines_array[i].x1, lines_array[i].y1);
+		ctx.lineTo(lines_array[i].x2, lines_array[i].y2);
 		ctx.stroke();
 		// I NEED SOME SCALE / CENTERIZATION HERE
 	};
@@ -91,12 +119,33 @@ function ft_onreadend(evt) {
 	if (evt.target.readyState == FileReader.DONE) {
 		var array = ft_toarray(evt.target.result);
 		object = ft_toobject(array);
+		log(object);
 	}
+}
+
+function ft_ablock() {
+	var canvas = ft_createcanvas();
+
+	if (blockElem.childElementCount == 0)
+		blockElem.appendChild(canvas);
+	else {
+		blockElem.removeChild(blockElem.firstChild);
+		blockElem.appendChild(canvas);
+	}
+
+	if (typeof object != "undefined") {
+		for (var i = 0; i < object.blocks.length; i++) {
+			ft_draw_block(canvas, object.blocks[i]);
+		};
+	}
+	else
+		log("no dxf");
 }
 
 document.getElementById("files").addEventListener("change", ft_listener);
 document.getElementById("number").addEventListener("input", ft_epur);
 document.getElementById("b_block").addEventListener("click", ft_block);
+document.getElementById("b_ablock").addEventListener("click", ft_ablock);
 
 </script>
 </body>
