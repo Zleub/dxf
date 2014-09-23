@@ -18,8 +18,8 @@ function ft_epur() {
 function ft_block() {
 	var canvas = document.createElement("canvas");
 	canvas.setAttribute("class", "c_canvas");
-	canvas.setAttribute("width", "1600");
-	canvas.setAttribute("height", "1200");
+	canvas.setAttribute("width", "2000");
+	canvas.setAttribute("height", "2000");
 
 	if (blockElem.childElementCount == 0)
 		blockElem.appendChild(canvas);
