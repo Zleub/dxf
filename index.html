@@ -17,7 +17,7 @@
 </head>
 
 <body>
-<input class="test" type="file" id="files" name="file" />
+<!-- <input class="test" type="file" id="files" name="file" />
 
 <div class="test">
 block[<span id="number" contenteditable>10</span>] =>
@@ -25,12 +25,15 @@ block[<span id="number" contenteditable>10</span>] =>
 </div>
 <button id="b_ablock">draw all block</button>
 
-<div id="block"></div>
+<div id="block"></div> -->
+
+<div id="container"></div>
 <br>
 
 <script src="ft_objects.js"></script>
 <script src="ft_conversions.js"></script>
 <script src="ft_listeners.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/kineticjs/5.0.1/kinetic.min.js"></script>
 
 <script>
 
@@ -40,6 +43,8 @@ function log(object) {
 
 var blockElem = document.getElementById("block");
 var numberElem = document.getElementById("number");
+
+var object;
 
 function ft_getline(lines_array, block, i) {
 	var line = ft_createline();
@@ -69,8 +74,8 @@ function ft_jump(block, i) {
 
 function ft_filllines(lines_array, block) {
 	for (var i = 0; i < block.length; i++) {
-		if (block[i].key == "10" || block[i].key == "20")
-		log(block[i]);
+		// if (block[i].key == "10" || block[i].key == "20")
+		// 	log(block[i]);
 		if (block[i].key == '0')
 			if (block[i].value == 'LINE')
 				i = ft_getline(lines_array, block, i + 1) - 1;
@@ -83,14 +88,12 @@ function ft_filllines(lines_array, block) {
 
 function ft_sympointmatrix(canvas, line_array) {
 	return {
-		x1: line_array.x1 + 1000,
-		y1: line_array.y1 + 1000,
-		x2: line_array.x2 + 1000,
-		y2: line_array.y2 + 1000,
+		x1: canvas.width / 2 - line_array.x1 + 1000,
+		y1: canvas.width / 2 - line_array.y1 + 1000,
+		x2: canvas.height / 2 - line_array.x2 + 1000,
+		y2: canvas.height / 2 - line_array.y2 + 1000,
 	}
 }
-
-var cmp = 0;
 
 function ft_draw_block(canvas, block) {
 	var lines_array = [];
@@ -142,10 +145,35 @@ function ft_ablock() {
 		log("no dxf");
 }
 
-document.getElementById("files").addEventListener("change", ft_listener);
-document.getElementById("number").addEventListener("input", ft_epur);
-document.getElementById("b_block").addEventListener("click", ft_block);
-document.getElementById("b_ablock").addEventListener("click", ft_ablock);
+var stage = new Kinetic.Stage({
+	container: 'container',
+	width: 1200,
+	height: 500
+});
+
+var layer = new Kinetic.Layer({});
+
+var shape = new Kinetic.Shape({
+	name: "delamerde",
+	x: 5,
+	y: 10,
+	fill: 'red',
+	drawFunc: function(context) {
+		context.moveTo(100, 100);
+		context.lineTo(200, 200);
+		context.stroke();
+	}
+});
+
+layer.add(shape);
+stage.add(layer);
+
+// document.getElementById("files").addEventListener("change", ft_listener);
+// document.getElementById("number").addEventListener("input", ft_epur);
+// document.getElementById("b_block").addEventListener("click", ft_block);
+// document.getElementById("b_ablock").addEventListener("click", ft_ablock);
+
+
 
 </script>
 </body>
