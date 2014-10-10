@@ -18,8 +18,8 @@
 
 <body>
 
-<!-- input class="test" type="file" id="files" name="file" />
-
+<input class="test" type="file" id="files" name="file" />
+<!--
 <div class="test">
 block[<span id="number" contenteditable>10</span>] =>
 <button id="b_block">draw block</button>
@@ -27,7 +27,7 @@ block[<span id="number" contenteditable>10</span>] =>
 <button id="b_ablock">draw all block</button>
 
 <div id="block"></div>
- -->
+-->
 
 
 <div id="container"></div>
@@ -36,6 +36,44 @@ block[<span id="number" contenteditable>10</span>] =>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/kineticjs/5.0.1/kinetic.min.js"></script>
 
 <script>
+
+function log(object) { console.log(object); }
+
+function DXF(BinaryString) {
+	this.str = BinaryString;
+
+	this.header = {};
+	this.classes = [];
+	this.tables = [];
+	this.blocks = [];
+	this.entities = [];
+	this.objects = [];
+	this.thumbnailimage = [];
+
+	this.toarray = function () {
+		var pattern = /\r\n|\r|\n */g;
+		var array = this.str.split(pattern);
+		for (var i = 1; i < array.length; i++)
+			array[i] = array[i].trim();
+		this.array = array;
+	};
+
+	this.toarray();
+}
+
+function ft_listener() {
+	var file = document.getElementById("files").files[0];
+	var reader = new FileReader();
+
+	reader.onloadend = function (evt) {
+		if (evt.target.readyState == FileReader.DONE) {
+			dxf = new DXF(evt.target.result)
+		}
+	};
+	reader.readAsBinaryString(file);
+}
+
+document.getElementById("files").addEventListener("change", ft_listener);
 
 </script>
 </body>
