@@ -53,12 +53,41 @@ function DXF(BinaryString) {
 	this.toarray = function () {
 		var pattern = /\r\n|\r|\n */g;
 		var array = this.str.split(pattern);
-		for (var i = 1; i < array.length; i++)
+		for (var i = 0; i < array.length; i++)
 			array[i] = array[i].trim();
 		this.array = array;
 	};
 
 	this.toarray();
+
+	this.getduo = function() {
+		var tmp = {}
+
+		tmp[0] = this.array[this.index];
+		tmp[1] = this.array[this.index + 1];
+		this.index += 2;
+		return tmp;
+	};
+
+	this.index = 0;
+	this.current = this.getduo();
+
+	this.stack = [];
+	this.instructions =
+
+
+	this.parse = function () {
+		while (this.index < this.array.length - 2)
+		{
+
+
+
+			this.current = this.getduo();
+		}
+	};
+
+	this.parse();
+
 }
 
 function ft_listener() {
