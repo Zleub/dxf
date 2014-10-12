@@ -39,6 +39,8 @@ block[<span id="number" contenteditable>10</span>] =>
 
 function log(object) { console.log(object); }
 
+function print(object) { console.log(object); }
+
 function DXF(BinaryString) {
 	this.str = BinaryString;
 
@@ -72,17 +74,63 @@ function DXF(BinaryString) {
 	this.index = 0;
 	this.current = this.getduo();
 
-	this.stack = [];
-	this.instructions =
-
-
 	this.parse = function () {
 		while (this.index < this.array.length - 2)
 		{
+			if (this.current[0] == '0' && this.current[1] == 'SECTION')
+			{
+				this.current = this.getduo();
+				if (this.current[0] == '2' && this.current[1] == 'HEADER')
+					this.section = this.current[1];
+				else if (this.current[0] == '2' && this.current[1] == 'CLASSES')
+					this.section = this.current[1];
+				else if (this.current[0] == '2' && this.current[1] == 'TABLES')
+					this.section = this.current[1];
+				else if (this.current[0] == '2' && this.current[1] == 'BLOCKS')
+					this.section = this.current[1];
+				else if (this.current[0] == '2' && this.current[1] == 'ENTITIES')
+					this.section = this.current[1];
+				else if (this.current[0] == '2' && this.current[1] == 'OBJECTS')
+					this.section = this.current[1];
+				else if (this.current[0] == '2' && this.current[1] == 'ACDSDATA')
+					this.section = this.current[1];
+			}
+			else if (this.current[0] == '9' && this.section == 'HEADER')
+			{
+				var tmp = this.current;
 
+				this.current = this.getduo();
+				this.header[tmp[1]] = this.current[1];
+			}
+			else if (this.current[0] == '0' && this.section == 'CLASSES')
+			{
+				var index = this.classes.length;
 
+				this.classes.push([]);
+				this.current = this.getduo();
+				while (this.current[0] != '0')
+				{
 
-			this.current = this.getduo();
+					this.classes[index].push(this.current);
+					this.current = this.getduo();
+				}
+			}
+			else if (this.current[0] == '0' && this.section == 'TABLES')
+			{
+				var index = this.tables.length;
+
+				this.tables.push([]);
+				log(this.current[1])
+				while (this.current[1] != 'ENDTAB')
+				{
+					// alert('while')
+					this.tables[index].push(this.current);
+					this.current = this.getduo();
+				}
+				this.current = this.getduo();
+			}
+			else
+				this.current = this.getduo();
 		}
 	};
 
