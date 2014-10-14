@@ -120,14 +120,15 @@ function DXF(BinaryString) {
 				var index = this.tables.length;
 
 				this.tables.push([]);
-				log(this.current[1])
+				this.current = this.getduo();
+				log('1');
 				while (this.current[1] != 'ENDTAB')
 				{
-					// alert('while')
+					if (this.current[1] == 'ENDTAB')
+						log('2');
 					this.tables[index].push(this.current);
 					this.current = this.getduo();
 				}
-				this.current = this.getduo();
 			}
 			else
 				this.current = this.getduo();
