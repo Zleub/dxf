@@ -121,11 +121,11 @@ function DXF(BinaryString) {
 
 				this.tables.push([]);
 				this.current = this.getduo();
-				log('1');
 				while (this.current[1] != 'ENDTAB')
 				{
+					log(this.current);
 					if (this.current[1] == 'ENDTAB')
-						log('2');
+						alert(this.current);
 					this.tables[index].push(this.current);
 					this.current = this.getduo();
 				}
