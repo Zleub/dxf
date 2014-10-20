@@ -55,12 +55,11 @@ function DXF(BinaryString) {
 	this.toarray = function () {
 		var pattern = /\r\n|\r|\n */g;
 		var array = this.str.split(pattern);
+
 		for (var i = 0; i < array.length; i++)
 			array[i] = array[i].trim();
 		this.array = array;
 	};
-
-	this.toarray();
 
 	this.getduo = function() {
 		var tmp = {}
@@ -71,30 +70,33 @@ function DXF(BinaryString) {
 		return tmp;
 	};
 
-	this.index = 0;
-	this.current = this.getduo();
+	this.getsection = function () {
+		this.current = this.getduo();
+		if (this.current[0] == '2' && this.current[1] == 'HEADER')
+			this.section = this.current[1];
+		else if (this.current[0] == '2' && this.current[1] == 'CLASSES')
+			this.section = this.current[1];
+		else if (this.current[0] == '2' && this.current[1] == 'TABLES')
+			this.section = this.current[1];
+		else if (this.current[0] == '2' && this.current[1] == 'BLOCKS')
+			this.section = this.current[1];
+		else if (this.current[0] == '2' && this.current[1] == 'ENTITIES')
+			this.section = this.current[1];
+		else if (this.current[0] == '2' && this.current[1] == 'OBJECTS')
+			this.section = this.current[1];
+		else if (this.current[0] == '2' && this.current[1] == 'ACDSDATA')
+			this.section = this.current[1];
+		this.current = this.getduo();
+		log(this.section);
+	}
 
 	this.parse = function () {
 		while (this.index < this.array.length - 2)
 		{
 			if (this.current[0] == '0' && this.current[1] == 'SECTION')
-			{
+				this.getsection()
+			else if (this.current[0] == '0' && this.current[1] == 'ENDSEC')
 				this.current = this.getduo();
-				if (this.current[0] == '2' && this.current[1] == 'HEADER')
-					this.section = this.current[1];
-				else if (this.current[0] == '2' && this.current[1] == 'CLASSES')
-					this.section = this.current[1];
-				else if (this.current[0] == '2' && this.current[1] == 'TABLES')
-					this.section = this.current[1];
-				else if (this.current[0] == '2' && this.current[1] == 'BLOCKS')
-					this.section = this.current[1];
-				else if (this.current[0] == '2' && this.current[1] == 'ENTITIES')
-					this.section = this.current[1];
-				else if (this.current[0] == '2' && this.current[1] == 'OBJECTS')
-					this.section = this.current[1];
-				else if (this.current[0] == '2' && this.current[1] == 'ACDSDATA')
-					this.section = this.current[1];
-			}
 			else if (this.current[0] == '9' && this.section == 'HEADER')
 			{
 				var tmp = this.current;
@@ -106,12 +108,13 @@ function DXF(BinaryString) {
 			{
 				var index = this.classes.length;
 
-				this.classes.push([]);
+				this.classes.push({});
+				// log('push CLASS');
 				this.current = this.getduo();
 				while (this.current[0] != '0')
 				{
-
-					this.classes[index].push(this.current);
+					// log(this.current)
+					this.classes[index][this.current[0]] = this.current[1];
 					this.current = this.getduo();
 				}
 			}
@@ -119,14 +122,35 @@ function DXF(BinaryString) {
 			{
 				var index = this.tables.length;
 
-				this.tables.push([]);
+				this.tables.push({});
+				// log('push TABLE');
 				this.current = this.getduo();
 				while (this.current[1] != 'ENDTAB')
 				{
+					if (this.tables[index]['subname'] == undefined && this.current[0] == '2')
+					{
+						// log('test')
+						this.tables[index]['subname'] = this.current[1];
+					}
+					else if (this.current[1] == this.tables[index]['subname'])
+						print('Hai new occurence') // I NEED TO ARRAY NOT TO HASH
 					log(this.current);
-					if (this.current[1] == 'ENDTAB')
-						alert(this.current);
-					this.tables[index].push(this.current);
+					this.tables[index][this.current[0]] = this.current[1];
+					this.current = this.getduo();
+				}
+				this.current = this.getduo();
+			}
+			else if (this.current[0] == '0' && this.section == 'BLOCKS')
+			{
+				var index = this.blocks.length;
+
+				this.blocks.push([]);
+				log('push BLOCK');
+				this.current = this.getduo();
+				while (this.current[0] != '0')
+				{
+					log(this.current)
+					this.blocks[index].push(this.current);
 					this.current = this.getduo();
 				}
 			}
@@ -135,6 +159,9 @@ function DXF(BinaryString) {
 		}
 	};
 
+	this.toarray();
+	this.index = 0;
+	this.current = this.getduo();
 	this.parse();
 
 }
