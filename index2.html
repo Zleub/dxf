@@ -44,15 +44,19 @@ function print(object) { console.log(object); }
 function DXF(BinaryString) {
 	this.str = BinaryString;
 
-	this.header = {};
-	this.classes = [];
-	this.tables = [];
-	this.blocks = [];
-	this.entities = [];
-	this.objects = [];
-	this.thumbnailimage = [];
+	this.dt_header = {};
+	this.dt_classes = [];
+	this.dt_tables = [];
+	this.dt_blocks = [];
+	this.dt_entities = [];
+	this.dt_objects = [];
+	this.dt_thumbnailimage = [];
 
-	this.toarray = function () {
+	this.ft_nextchar = function (c) {
+		return String.fromCharCode(c.charCodeAt(0) + 1);
+	}
+
+	this.ft_toarray = function () {
 		var pattern = /\r\n|\r|\n */g;
 		var array = this.str.split(pattern);
 
@@ -61,7 +65,7 @@ function DXF(BinaryString) {
 		this.array = array;
 	};
 
-	this.getduo = function() {
+	this.ft_getduo = function() {
 		var tmp = {}
 
 		tmp[0] = this.array[this.index];
@@ -70,8 +74,8 @@ function DXF(BinaryString) {
 		return tmp;
 	};
 
-	this.getsection = function () {
-		this.current = this.getduo();
+	this.ft_getsection = function () {
+		this.current = this.ft_getduo();
 		if (this.current[0] == '2' && this.current[1] == 'HEADER')
 			this.section = this.current[1];
 		else if (this.current[0] == '2' && this.current[1] == 'CLASSES')
@@ -86,84 +90,122 @@ function DXF(BinaryString) {
 			this.section = this.current[1];
 		else if (this.current[0] == '2' && this.current[1] == 'ACDSDATA')
 			this.section = this.current[1];
-		this.current = this.getduo();
+		this.current = this.ft_getduo();
 		log(this.section);
 	}
 
-	this.parse = function () {
+	this.ft_parse_header = function () {
+		var tmp = this.current;
+
+		this.current = this.ft_getduo();
+		this.dt_header[tmp[1]] = this.current[1];
+	}
+
+	this.ft_parse_class = function () {
+		var index = this.dt_classes.length;
+
+		this.dt_classes.push({});
+		// log('push CLASS');
+		this.current = this.ft_getduo();
+		while (this.current[0] != '0')
+		{
+			// log(this.current)
+			this.dt_classes[index][this.current[0]] = this.current[1];
+			this.current = this.ft_getduo();
+		}
+	}
+
+	this.ft_parse_table = function () {
+		var index = this.dt_tables.length;
+
+		this.dt_tables.push({});
+		log('push TABLE');
+		this.current = this.ft_getduo();
+		while (this.current[1] != 'ENDTAB')
+		{
+			var tmp;
+			if (this.dt_tables[index]['name'] == undefined && this.current[0] == '2')
+			{
+				tmp = 'A';
+				this.dt_tables[index]['name'] = this.current[1];
+				while (this.current[0] != '0')
+				{
+					this.dt_tables[index][this.current[0]] = this.current[1];
+					this.current = this.ft_getduo();
+				}
+			}
+			else if (this.current[1] == this.dt_tables[index]['name'])
+			{
+				this.dt_tables[index][tmp] = {};
+				this.current = this.ft_getduo();
+
+				while (this.current[0] != '0')
+				{
+					this.dt_tables[index][tmp][this.current[0]] = this.current[1];
+					this.current = this.ft_getduo();
+				}
+				tmp = this.ft_nextchar(tmp);
+			}
+		}
+		this.current = this.ft_getduo();
+	}
+
+	this.ft_parse_block = function () {
+		var index = this.dt_blocks.length;
+
+		this.dt_blocks.push({});
+		// log('push BLOCK');
+		this.current = this.ft_getduo();
+		while (this.current[0] != '0')
+		{
+			// log(this.current)
+			this.dt_blocks[index][this.current[0]] = this.current[1];
+			this.current = this.ft_getduo();
+		}
+	}
+
+	this.ft_parse_entity = function () {
+		var index = this.dt_entities.length;
+
+		this.dt_entities.push({});
+		// log('push ENTITIES');
+		this.current = this.ft_getduo();
+		while (this.current[0] != '0')
+		{
+			// log(this.current)
+			this.dt_entities[index][this.current[0]] = this.current[1];
+			this.current = this.ft_getduo();
+		}
+	}
+
+	this.ft_parse = function () {
 		while (this.index < this.array.length - 2)
 		{
 			if (this.current[0] == '0' && this.current[1] == 'SECTION')
-				this.getsection()
+				this.ft_getsection();
 			else if (this.current[0] == '0' && this.current[1] == 'ENDSEC')
-				this.current = this.getduo();
+				this.current = this.ft_getduo();
 			else if (this.current[0] == '9' && this.section == 'HEADER')
-			{
-				var tmp = this.current;
-
-				this.current = this.getduo();
-				this.header[tmp[1]] = this.current[1];
-			}
+				this.ft_parse_header();
 			else if (this.current[0] == '0' && this.section == 'CLASSES')
-			{
-				var index = this.classes.length;
-
-				this.classes.push({});
-				// log('push CLASS');
-				this.current = this.getduo();
-				while (this.current[0] != '0')
-				{
-					// log(this.current)
-					this.classes[index][this.current[0]] = this.current[1];
-					this.current = this.getduo();
-				}
-			}
+				this.ft_parse_class();
 			else if (this.current[0] == '0' && this.section == 'TABLES')
-			{
-				var index = this.tables.length;
-
-				this.tables.push({});
-				// log('push TABLE');
-				this.current = this.getduo();
-				while (this.current[1] != 'ENDTAB')
-				{
-					if (this.tables[index]['subname'] == undefined && this.current[0] == '2')
-					{
-						// log('test')
-						this.tables[index]['subname'] = this.current[1];
-					}
-					else if (this.current[1] == this.tables[index]['subname'])
-						print('Hai new occurence') // I NEED TO ARRAY NOT TO HASH
-					log(this.current);
-					this.tables[index][this.current[0]] = this.current[1];
-					this.current = this.getduo();
-				}
-				this.current = this.getduo();
-			}
+				this.ft_parse_table();
 			else if (this.current[0] == '0' && this.section == 'BLOCKS')
-			{
-				var index = this.blocks.length;
-
-				this.blocks.push([]);
-				log('push BLOCK');
-				this.current = this.getduo();
-				while (this.current[0] != '0')
-				{
-					log(this.current)
-					this.blocks[index].push(this.current);
-					this.current = this.getduo();
-				}
-			}
+				this.ft_parse_block();
+			else if (this.current[0] == '0' && this.section == 'ENTITIES')
+				this.ft_parse_entity();
 			else
-				this.current = this.getduo();
+				this.current = this.ft_getduo();
 		}
 	};
 
-	this.toarray();
+	this.ft_toarray();
 	this.index = 0;
-	this.current = this.getduo();
-	this.parse();
+	this.current = this.ft_getduo();
+	this.ft_parse();
 
+	log(this);
 }
 
 function ft_listener() {
