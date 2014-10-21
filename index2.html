@@ -169,12 +169,70 @@ function DXF(BinaryString) {
 
 		this.dt_entities.push({});
 		// log('push ENTITIES');
+		this.dt_entities[index][this.current[0]] = this.current[1];
 		this.current = this.ft_getduo();
 		while (this.current[0] != '0')
 		{
 			// log(this.current)
 			this.dt_entities[index][this.current[0]] = this.current[1];
 			this.current = this.ft_getduo();
+		}
+	}
+
+	this.ft_seeksize = function (entity, index, array) {
+		log(entity[10])
+		log(entity[20])
+		if (entity == null)
+		{
+			print('no entity');
+			return ;
+		}
+		if (typeof arguments.callee.x_min == 'undefined'
+			&& typeof entity[10] != null)
+		{
+			print('first x_min');
+			arguments.callee.x_min = parseInt(entity[10]);
+		}
+		else if (parseInt(arguments.callee.x_min) > parseInt(entity[10]))
+		{
+			print('x_min');
+			arguments.callee.x_min = parseInt(entity[10]);
+		}
+
+		if (typeof arguments.callee.x_max == 'undefined'
+			&& typeof entity[10] != null)
+		{
+			print('first x_max');
+			arguments.callee.x_max = parseInt(entity[10]);
+		}
+		else if (parseInt(arguments.callee.x_max) < parseInt(entity[10]))
+		{
+			print('x_max');
+			arguments.callee.x_max = parseInt(entity[10]);
+		}
+
+		if (typeof arguments.callee.y_min == 'undefined'
+			&& typeof entity[10] != null)
+		{
+			print('first y_min');
+			arguments.callee.y_min = parseInt(entity[20]);
+		}
+		else if (parseInt(arguments.callee.y_min) > parseInt(entity[20]))
+		{
+			print('y_min');
+			arguments.callee.y_min = parseInt(entity[20]);
+		}
+
+		if (typeof arguments.callee.y_max == 'undefined'
+			&& typeof entity[20] != null)
+		{
+			print('first y_max');
+			arguments.callee.y_max = parseInt(entity[20]);
+		}
+		else if (parseInt(arguments.callee.y_max) < parseInt(entity[20]))
+		{
+			print('y_max');
+			arguments.callee.y_max = parseInt(entity[20]);
 		}
 	}
 
@@ -198,7 +256,40 @@ function DXF(BinaryString) {
 			else
 				this.current = this.ft_getduo();
 		}
+
+		this.dt_entities.forEach(this.ft_seeksize);
+		if (this.ft_seeksize.x_min < 0)
+		{
+			log(this.ft_seeksize.x_max + ' - ' + this.ft_seeksize.x_min)
+			log(this.ft_seeksize.x_max - this.ft_seeksize.x_min)
+		}
+		else
+		{
+			log(this.ft_seeksize.x_max + ' + ' + this.ft_seeksize.x_min)
+			log(this.ft_seeksize.x_max + this.ft_seeksize.x_min)
+		}
+		if (this.ft_seeksize.y_min < 0)
+		{
+			log(this.ft_seeksize.y_max + ' - ' + this.ft_seeksize.y_min)
+			log(this.ft_seeksize.y_max - this.ft_seeksize.y_min)
+		}
+		else
+		{
+			log(this.ft_seeksize.y_max + ' + ' + this.ft_seeksize.y_min)
+			log(this.ft_seeksize.y_max + this.ft_seeksize.y_min)
+		}
 	};
+
+	this.toKinetic = function () {
+		if (document.getElementById('container') == true)
+		{
+			this.stage = new Kinetic.Stage({
+				container: 'container',
+				width: 500,
+				height: 500
+			});
+		}
+	}
 
 	this.ft_toarray();
 	this.index = 0;
