@@ -180,8 +180,6 @@ function DXF(BinaryString) {
 	}
 
 	this.ft_seeksize = function (entity, index, array) {
-		log(entity[10])
-		log(entity[20])
 		if (entity == null)
 		{
 			print('no entity');
@@ -189,51 +187,27 @@ function DXF(BinaryString) {
 		}
 		if (typeof arguments.callee.x_min == 'undefined'
 			&& typeof entity[10] != null)
-		{
-			print('first x_min');
 			arguments.callee.x_min = parseInt(entity[10]);
-		}
 		else if (parseInt(arguments.callee.x_min) > parseInt(entity[10]))
-		{
-			print('x_min');
 			arguments.callee.x_min = parseInt(entity[10]);
-		}
 
 		if (typeof arguments.callee.x_max == 'undefined'
 			&& typeof entity[10] != null)
-		{
-			print('first x_max');
 			arguments.callee.x_max = parseInt(entity[10]);
-		}
 		else if (parseInt(arguments.callee.x_max) < parseInt(entity[10]))
-		{
-			print('x_max');
 			arguments.callee.x_max = parseInt(entity[10]);
-		}
 
 		if (typeof arguments.callee.y_min == 'undefined'
 			&& typeof entity[10] != null)
-		{
-			print('first y_min');
 			arguments.callee.y_min = parseInt(entity[20]);
-		}
 		else if (parseInt(arguments.callee.y_min) > parseInt(entity[20]))
-		{
-			print('y_min');
 			arguments.callee.y_min = parseInt(entity[20]);
-		}
 
 		if (typeof arguments.callee.y_max == 'undefined'
 			&& typeof entity[20] != null)
-		{
-			print('first y_max');
 			arguments.callee.y_max = parseInt(entity[20]);
-		}
 		else if (parseInt(arguments.callee.y_max) < parseInt(entity[20]))
-		{
-			print('y_max');
 			arguments.callee.y_max = parseInt(entity[20]);
-		}
 	}
 
 	this.ft_parse = function () {
@@ -258,43 +232,62 @@ function DXF(BinaryString) {
 		}
 
 		this.dt_entities.forEach(this.ft_seeksize);
-		if (this.ft_seeksize.x_min < 0)
-		{
-			log(this.ft_seeksize.x_max + ' - ' + this.ft_seeksize.x_min)
-			log(this.ft_seeksize.x_max - this.ft_seeksize.x_min)
-		}
-		else
-		{
-			log(this.ft_seeksize.x_max + ' + ' + this.ft_seeksize.x_min)
-			log(this.ft_seeksize.x_max + this.ft_seeksize.x_min)
-		}
-		if (this.ft_seeksize.y_min < 0)
-		{
-			log(this.ft_seeksize.y_max + ' - ' + this.ft_seeksize.y_min)
-			log(this.ft_seeksize.y_max - this.ft_seeksize.y_min)
-		}
-		else
-		{
-			log(this.ft_seeksize.y_max + ' + ' + this.ft_seeksize.y_min)
-			log(this.ft_seeksize.y_max + this.ft_seeksize.y_min)
-		}
 	};
 
+	this.get_layer = function (layer_name) {
+		if (!this.kt_layers[layer_name])
+			this.kt_layers[layer_name] = new Kinetic.Layer({ name: layer_name});
+		return this.kt_layers[layer_name]
+	}
+
+	this.ft_shape = function (entity, index) {
+		if (entity[8])
+			var layer = this.get_layer(entity[8]);
+		this.kt_shapes[index] = new Kinetic.Shape({
+			name: entity[5],
+			x: 0,
+			y: 0,
+			fill: 'red',
+			drawFunc: function(context) {
+				context.moveTo(entity[10], entity[11]);
+				log('10: ' + entity[10])
+				log('11: ' + entity[11]);
+				context.lineTo(entity[20], entity[21]);
+				log('20: ' + entity[20])
+				log('21: ' + entity[21]);
+				context.stroke();
+			}
+		});
+		layer.add(this.kt_shapes[index]);
+	}
+
 	this.toKinetic = function () {
-		if (document.getElementById('container') == true)
+		if (document.getElementById('container'))
 		{
-			this.stage = new Kinetic.Stage({
+			this.kt_stage = new Kinetic.Stage({
 				container: 'container',
-				width: 500,
-				height: 500
+				width: Math.abs(this.ft_seeksize.x_min) + Math.abs(this.ft_seeksize.x_max),
+				height: Math.abs(this.ft_seeksize.y_min) + Math.abs(this.ft_seeksize.y_max)
 			});
+			this.kt_shapes = [];
+			this.kt_layers = [];
+			for (var i = 0; i < this.dt_entities.length; i++) {
+				if (this.dt_entities[i][0] == 'LINE')
+					this.ft_shape(this.dt_entities[i], i);
+			};
+			for (i in this.kt_layers) {
+				this.kt_stage.add(this.kt_layers[i]);
+			};
 		}
+		else
+			log('provide container plz')
 	}
 
 	this.ft_toarray();
 	this.index = 0;
 	this.current = this.ft_getduo();
 	this.ft_parse();
+	this.toKinetic();
 
 	log(this);
 }
