@@ -17,7 +17,7 @@
 </head>
 
 <body>
-<!-- input class="test" type="file" id="files" name="file" />
+input class="test" type="file" id="files" name="file" />
 
 <div class="test">
 block[<span id="number" contenteditable>10</span>] =>
@@ -26,7 +26,7 @@ block[<span id="number" contenteditable>10</span>] =>
 <button id="b_ablock">draw all block</button>
 
 <div id="block"></div>
- -->
+
 <div id="container"></div>
 <br>
 
@@ -145,34 +145,34 @@ function ft_ablock() {
 		log("no dxf");
 }
 
-var stage = new Kinetic.Stage({
-	container: 'container',
-	width: 500,
-	height: 500
-});
+// var stage = new Kinetic.Stage({
+// 	container: 'container',
+// 	width: 500,
+// 	height: 500
+// });
 
-var layer = new Kinetic.Layer({});
+// var layer = new Kinetic.Layer({});
 
-var shape = new Kinetic.Shape({
-	name: "delamerde",
-	x: 10,
-	y: 10,
-	fill: 'red',
-	drawFunc: function(context) {
-		context.moveTo(100, 100);
-		context.lineTo(800, 800);
-		context.stroke();
-	}
-});
+// var shape = new Kinetic.Shape({
+// 	name: "delamerde",
+// 	x: 10,
+// 	y: 10,
+// 	fill: 'red',
+// 	drawFunc: function(context) {
+// 		context.moveTo(100, 100);
+// 		context.lineTo(800, 800);
+// 		context.stroke();
+// 	}
+// });
 
-layer.add(shape);
+// layer.add(shape);
 
-stage.add(layer);
+// stage.add(layer);
 
-// document.getElementById("files").addEventListener("change", ft_listener);
-// document.getElementById("number").addEventListener("input", ft_epur);
-// document.getElementById("b_block").addEventListener("click", ft_block);
-// document.getElementById("b_ablock").addEventListener("click", ft_ablock);
+document.getElementById("files").addEventListener("change", ft_listener);
+document.getElementById("number").addEventListener("input", ft_epur);
+document.getElementById("b_block").addEventListener("click", ft_block);
+document.getElementById("b_ablock").addEventListener("click", ft_ablock);
 
 </script>
 </body>

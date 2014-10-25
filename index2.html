@@ -232,6 +232,8 @@ function DXF(BinaryString) {
 		}
 
 		this.dt_entities.forEach(this.ft_seeksize);
+		this.width = Math.abs(this.ft_seeksize.x_min) + Math.abs(this.ft_seeksize.x_max);
+		this.height = Math.abs(this.ft_seeksize.y_min) + Math.abs(this.ft_seeksize.y_max);
 	};
 
 	this.get_layer = function (layer_name) {
@@ -241,6 +243,7 @@ function DXF(BinaryString) {
 	}
 
 	this.ft_shape = function (entity, index) {
+		log(entity)
 		if (entity[8])
 			var layer = this.get_layer(entity[8]);
 		this.kt_shapes[index] = new Kinetic.Shape({
@@ -249,12 +252,22 @@ function DXF(BinaryString) {
 			y: 0,
 			fill: 'red',
 			drawFunc: function(context) {
-				context.moveTo(entity[10], entity[11]);
-				log('10: ' + entity[10])
-				log('11: ' + entity[11]);
-				context.lineTo(entity[20], entity[21]);
-				log('20: ' + entity[20])
-				log('21: ' + entity[21]);
+				context.moveTo(
+					// this.width / 2 - entity[10],
+					// this.width / 2 - entity[20]
+					entity[10],
+					entity[20]
+					);
+				// log('10: ' + entity[10])
+				// log('11: ' + entity[11]);
+				context.lineTo(
+					// this.height / 2 - entity[11],
+					// this.height / 2 - entity[21]
+					entity[11],
+					entity[21]
+					);
+				// log('20: ' + entity[20])
+				// log('21: ' + entity[21]);
 				context.stroke();
 			}
 		});
@@ -272,7 +285,7 @@ function DXF(BinaryString) {
 			this.kt_shapes = [];
 			this.kt_layers = [];
 			for (var i = 0; i < this.dt_entities.length; i++) {
-				if (this.dt_entities[i][0] == 'LINE')
+				if (this.dt_entities[i][0] == 'LINE') // RESTRICTIONS HERE
 					this.ft_shape(this.dt_entities[i], i);
 			};
 			for (i in this.kt_layers) {
