@@ -198,7 +198,7 @@ function DXF(BinaryString) {
 			arguments.callee.x_max = parseInt(entity[10]);
 
 		if (typeof arguments.callee.y_min == 'undefined'
-			&& typeof entity[10] != null)
+			&& typeof entity[20] != null)
 			arguments.callee.y_min = parseInt(entity[20]);
 		else if (parseInt(arguments.callee.y_min) > parseInt(entity[20]))
 			arguments.callee.y_min = parseInt(entity[20]);
@@ -208,6 +208,31 @@ function DXF(BinaryString) {
 			arguments.callee.y_max = parseInt(entity[20]);
 		else if (parseInt(arguments.callee.y_max) < parseInt(entity[20]))
 			arguments.callee.y_max = parseInt(entity[20]);
+
+		if (typeof arguments.callee.x_min == 'undefined'
+			&& typeof entity[11] != null)
+			arguments.callee.x_min = parseInt(entity[11]);
+		else if (parseInt(arguments.callee.x_min) > parseInt(entity[11]))
+			arguments.callee.x_min = parseInt(entity[11]);
+
+		if (typeof arguments.callee.x_max == 'undefined'
+			&& typeof entity[11] != null)
+			arguments.callee.x_max = parseInt(entity[11]);
+		else if (parseInt(arguments.callee.x_max) < parseInt(entity[11]))
+			arguments.callee.x_max = parseInt(entity[11]);
+
+		if (typeof arguments.callee.y_min == 'undefined'
+			&& typeof entity[21] != null)
+			arguments.callee.y_min = parseInt(entity[21]);
+		else if (parseInt(arguments.callee.y_min) > parseInt(entity[21]))
+			arguments.callee.y_min = parseInt(entity[21]);
+
+		if (typeof arguments.callee.y_max == 'undefined'
+			&& typeof entity[21] != null)
+			arguments.callee.y_max = parseInt(entity[21]);
+		else if (parseInt(arguments.callee.y_max) < parseInt(entity[21]))
+			arguments.callee.y_max = parseInt(entity[21]);
+
 	}
 
 	this.ft_parse = function () {
@@ -232,8 +257,24 @@ function DXF(BinaryString) {
 		}
 
 		this.dt_entities.forEach(this.ft_seeksize);
+
+		log(this.ft_seeksize.x_min)
+		log(this.ft_seeksize.x_max)
+		log(this.ft_seeksize.y_min)
+		log(this.ft_seeksize.y_max)
 		this.width = Math.abs(this.ft_seeksize.x_min) + Math.abs(this.ft_seeksize.x_max);
 		this.height = Math.abs(this.ft_seeksize.y_min) + Math.abs(this.ft_seeksize.y_max);
+		if (this.ft_seeksize.x_min < 0)
+			this.offsetx = Math.abs(this.ft_seeksize.x_min);
+		else
+			this.offsetx = 0;
+		if (this.ft_seeksize.y_min < 0)
+			this.offsety = Math.abs(this.ft_seeksize.y_min);
+		else
+			this.offsety = 0;
+
+		log(this.width)
+		log(this.height)
 	};
 
 	this.get_layer = function (layer_name) {
@@ -245,21 +286,27 @@ function DXF(BinaryString) {
 	this.ft_shape = function (entity, index) {
 		var width = this.width;
 		var height = this.height;
+		var offsetx = this.offsetx;
+		var offsety = 0;
+
+		log(offsetx);
+		log(offsety);
+
 
 		log(entity)
 		if (entity[8])
 			var layer = this.get_layer(entity[8]);
 		this.kt_shapes[index] = new Kinetic.Shape({
 			name: entity[5],
-			x: 0,
-			y: 0,
+			x: offsetx,
+			y: offsety,
 			fill: 'red',
 			drawFunc: function(context) {
 				context.moveTo(
 					// width / 2 - entity[10],
 					// height / 2 - entity[20]
 					entity[10],
-					height - entity[20]
+					entity[20]
 					// entity[10],
 					// entity[20]
 					);
@@ -269,7 +316,7 @@ function DXF(BinaryString) {
 					// width / 2 - entity[11],
 					// height / 2 - entity[21]
 					entity[11],
-					height - entity[21]
+					entity[21]
 					// entity[11],
 					// entity[21]
 					);
