@@ -258,10 +258,10 @@ function DXF(BinaryString) {
 
 		this.dt_entities.forEach(this.ft_seeksize);
 
-		log(this.ft_seeksize.x_min)
-		log(this.ft_seeksize.x_max)
-		log(this.ft_seeksize.y_min)
-		log(this.ft_seeksize.y_max)
+		// log(this.ft_seeksize.x_min)
+		// log(this.ft_seeksize.x_max)
+		// log(this.ft_seeksize.y_min)
+		// log(this.ft_seeksize.y_max)
 		this.width = Math.abs(this.ft_seeksize.x_min) + Math.abs(this.ft_seeksize.x_max);
 		this.height = Math.abs(this.ft_seeksize.y_min) + Math.abs(this.ft_seeksize.y_max);
 		if (this.ft_seeksize.x_min < 0)
@@ -273,8 +273,8 @@ function DXF(BinaryString) {
 		else
 			this.offsety = 0;
 
-		log(this.width)
-		log(this.height)
+		// log(this.width)
+		// log(this.height)
 	};
 
 	this.get_layer = function (layer_name) {
@@ -289,11 +289,11 @@ function DXF(BinaryString) {
 		var offsetx = this.offsetx;
 		var offsety = 0;
 
-		log(offsetx);
-		log(offsety);
+		// log(offsetx);
+		// log(offsety);
 
 
-		log(entity)
+		// log(entity)
 		if (entity[8])
 			var layer = this.get_layer(entity[8]);
 		this.kt_shapes[index] = new Kinetic.Shape({
