@@ -243,6 +243,9 @@ function DXF(BinaryString) {
 	}
 
 	this.ft_shape = function (entity, index) {
+		var width = this.width;
+		var height = this.height;
+
 		log(entity)
 		if (entity[8])
 			var layer = this.get_layer(entity[8]);
@@ -253,18 +256,22 @@ function DXF(BinaryString) {
 			fill: 'red',
 			drawFunc: function(context) {
 				context.moveTo(
-					// this.width / 2 - entity[10],
-					// this.width / 2 - entity[20]
+					// width / 2 - entity[10],
+					// height / 2 - entity[20]
 					entity[10],
-					entity[20]
+					height - entity[20]
+					// entity[10],
+					// entity[20]
 					);
 				// log('10: ' + entity[10])
 				// log('11: ' + entity[11]);
 				context.lineTo(
-					// this.height / 2 - entity[11],
-					// this.height / 2 - entity[21]
+					// width / 2 - entity[11],
+					// height / 2 - entity[21]
 					entity[11],
-					entity[21]
+					height - entity[21]
+					// entity[11],
+					// entity[21]
 					);
 				// log('20: ' + entity[20])
 				// log('21: ' + entity[21]);
