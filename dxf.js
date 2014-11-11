@@ -133,6 +133,7 @@ function ft_seeksize(entity, index, array) {
 			return ;
 		}
 
+		log(entity)
 		if (typeof arguments.callee.x_min == 'undefined'
 			&& typeof entity[10] != null)
 			arguments.callee.x_min = parseInt(entity[10]);
@@ -205,12 +206,23 @@ function ft_parse() {
 
 		this.dt_entities.forEach(this.ft_seeksize);
 
-		this.width = Math.abs(this.ft_seeksize.x_min) + Math.abs(this.ft_seeksize.x_max);
-		this.height = Math.abs(this.ft_seeksize.y_min) + Math.abs(this.ft_seeksize.y_max);
+		if (this.ft_seeksize.x_min > 0)
+			this.width = Math.abs(this.ft_seeksize.x_max) - Math.abs(this.ft_seeksize.x_min);
+		else
+			this.width = Math.abs(this.ft_seeksize.x_min) + Math.abs(this.ft_seeksize.x_max);
+
+		if (this.ft_seeksize.y_min > 0)
+			this.height = Math.abs(this.ft_seeksize.y_max);
+		else
+			this.height = Math.abs(this.ft_seeksize.y_min) + Math.abs(this.ft_seeksize.y_max);
+
+
+
 		if (this.ft_seeksize.x_min < 0)
 			this.offsetx = Math.abs(this.ft_seeksize.x_min);
 		else
 			this.offsetx = 0;
+
 		if (this.ft_seeksize.y_min < 0)
 			this.offsety = Math.abs(this.ft_seeksize.y_min);
 		else
@@ -232,6 +244,11 @@ function ft_shape(entity, index) {
 		var height = this.height;
 		var offsetx = this.offsetx;
 		var offsety = this.offsety;
+		var x_min = this.ft_seeksize.x_min;
+		var x_max = this.ft_seeksize.x_max;
+		var y_min = this.ft_seeksize.y_min;
+		var y_max = this.ft_seeksize.y_max;
+
 
 		if (entity[8])
 			var layer = this.ft_get_layer(entity[8]);
@@ -242,7 +259,7 @@ function ft_shape(entity, index) {
 			fill: 'red',
 			drawFunc: function(context) {
 				context.moveTo(
-					parseInt(entity[10]) + parseInt(offsetx),
+					parseInt(entity[10]) + Math.abs(x_min),
 					parseInt(entity[20]) + parseInt(offsety)
 					// entity[10],
 					// entity[20]
@@ -250,7 +267,7 @@ function ft_shape(entity, index) {
 				// log('10: ' + entity[10])
 				// log('11: ' + entity[11]);
 				context.lineTo(
-					parseInt(entity[11]) + parseInt(offsetx),
+					parseInt(entity[11]) + Math.abs(x_min),
 					parseInt(entity[21]) + parseInt(offsety)
 					// entity[11],
 					// entity[21]
@@ -264,12 +281,16 @@ function ft_shape(entity, index) {
 	};
 
 function ft_toKinetic() {
+		log(this.ft_seeksize.x_min)
+		log(this.ft_seeksize.x_max)
+		log(this.ft_seeksize.y_min)
+		log(this.ft_seeksize.y_max)
 		if (document.getElementById('container'))
 		{
 			this.kt_stage = new Kinetic.Stage({
 				container: 'container',
-				width: Math.abs(this.ft_seeksize.x_min) + Math.abs(this.ft_seeksize.x_max),
-				height: Math.abs(this.ft_seeksize.y_min) + Math.abs(this.ft_seeksize.y_max)
+				width: this.width + 1,
+				height: this.height + 1
 			});
 			this.kt_shapes = [];
 			this.kt_layers = [];
