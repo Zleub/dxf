@@ -206,28 +206,8 @@ function ft_parse() {
 
 		this.dt_entities.forEach(this.ft_seeksize);
 
-		if (this.ft_seeksize.x_min > 0)
-			this.width = Math.abs(this.ft_seeksize.x_max) - Math.abs(this.ft_seeksize.x_min);
-		else
-			this.width = Math.abs(this.ft_seeksize.x_min) + Math.abs(this.ft_seeksize.x_max);
-
-		if (this.ft_seeksize.y_min > 0)
-			this.height = Math.abs(this.ft_seeksize.y_max);
-		else
-			this.height = Math.abs(this.ft_seeksize.y_min) + Math.abs(this.ft_seeksize.y_max);
-
-
-
-		if (this.ft_seeksize.x_min < 0)
-			this.offsetx = Math.abs(this.ft_seeksize.x_min);
-		else
-			this.offsetx = 0;
-
-		if (this.ft_seeksize.y_min < 0)
-			this.offsety = Math.abs(this.ft_seeksize.y_min);
-		else
-			this.offsety = 0;
-
+		this.width = this.ft_seeksize.x_max - this.ft_seeksize.x_min;
+		this.height = this.ft_seeksize.y_max - this.ft_seeksize.y_min;
 	};
 
 function ft_get_layer(layer_name) {
@@ -240,15 +220,8 @@ function ft_get_layer(layer_name) {
 	};
 
 function ft_shape(entity, index) {
-		var width = this.width;
-		var height = this.height;
-		var offsetx = this.offsetx;
-		var offsety = this.offsety;
 		var x_min = this.ft_seeksize.x_min;
-		var x_max = this.ft_seeksize.x_max;
 		var y_min = this.ft_seeksize.y_min;
-		var y_max = this.ft_seeksize.y_max;
-
 
 		if (entity[8])
 			var layer = this.ft_get_layer(entity[8]);
@@ -259,21 +232,13 @@ function ft_shape(entity, index) {
 			fill: 'red',
 			drawFunc: function(context) {
 				context.moveTo(
-					parseInt(entity[10]) + Math.abs(x_min),
-					parseInt(entity[20]) + parseInt(offsety)
-					// entity[10],
-					// entity[20]
+					parseInt(entity[10]) - x_min,
+					parseInt(entity[20]) - y_min
 					);
-				// log('10: ' + entity[10])
-				// log('11: ' + entity[11]);
 				context.lineTo(
-					parseInt(entity[11]) + Math.abs(x_min),
-					parseInt(entity[21]) + parseInt(offsety)
-					// entity[11],
-					// entity[21]
+					parseInt(entity[11]) - x_min,
+					parseInt(entity[21]) - y_min
 					);
-				// log('20: ' + entity[20])
-				// log('21: ' + entity[21]);
 				context.stroke();
 			}
 		});
@@ -281,10 +246,12 @@ function ft_shape(entity, index) {
 	};
 
 function ft_toKinetic() {
-		log(this.ft_seeksize.x_min)
-		log(this.ft_seeksize.x_max)
-		log(this.ft_seeksize.y_min)
-		log(this.ft_seeksize.y_max)
+		log('x_min: ' + this.ft_seeksize.x_min)
+		log('x_max: ' + this.ft_seeksize.x_max)
+		log('y_min: ' + this.ft_seeksize.y_min)
+		log('y_max: ' + this.ft_seeksize.y_max)
+		log('height: ' + this.height)
+		log('width: ' + this.width)
 		if (document.getElementById('container'))
 		{
 			this.kt_stage = new Kinetic.Stage({
@@ -339,6 +306,10 @@ function DXF(BinaryString) {
 	// CONSTRUCTOR
 	this.ft_toarray();
 	this.index = 0;
+	this.ft_seeksize.x_min = undefined
+	this.ft_seeksize.x_max = undefined
+	this.ft_seeksize.y_min = undefined
+	this.ft_seeksize.y_max
 	this.current = this.ft_getduo();
 	this.ft_parse();
 
