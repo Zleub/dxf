@@ -39,7 +39,6 @@ function ft_listener() {
 	reader.onloadend = function (evt) {
 		if (evt.target.readyState == FileReader.DONE) {
 			dxf = new DXF(evt.target.result)
-			dxf.ft_toKinetic();
 		}
 	};
 	reader.readAsBinaryString(file);
