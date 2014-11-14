@@ -37,7 +37,6 @@ function ft_getsection() {
 		else if (this.current[0] == '2' && this.current[1] == 'ACDSDATA')
 			this.section = this.current[1];
 		this.current = this.ft_getduo();
-		log(this.section);
 	};
 
 function ft_parse_header() {
@@ -51,11 +50,9 @@ function ft_parse_class () {
 		var index = this.dt_classes.length;
 
 		this.dt_classes.push({});
-		// log('push CLASS');
 		this.current = this.ft_getduo();
 		while (this.current[0] != '0')
 		{
-			// log(this.current)
 			this.dt_classes[index][this.current[0]] = this.current[1];
 			this.current = this.ft_getduo();
 		}
@@ -65,7 +62,6 @@ function ft_parse_table() {
 		var index = this.dt_tables.length;
 
 		this.dt_tables.push({});
-		log('push TABLE');
 		this.current = this.ft_getduo();
 		while (this.current[1] != 'ENDTAB')
 		{
@@ -100,11 +96,9 @@ function ft_parse_block() {
 		var index = this.dt_blocks.length;
 
 		this.dt_blocks.push({});
-		// log('push BLOCK');
 		this.current = this.ft_getduo();
 		while (this.current[0] != '0')
 		{
-			// log(this.current)
 			this.dt_blocks[index][this.current[0]] = this.current[1];
 			this.current = this.ft_getduo();
 		}
@@ -114,12 +108,10 @@ function ft_parse_entity() {
 		var index = this.dt_entities.length;
 
 		this.dt_entities.push({});
-		// log('push ENTITIES');
 		this.dt_entities[index][this.current[0]] = this.current[1];
 		this.current = this.ft_getduo();
 		while (this.current[0] != '0')
 		{
-			// log(this.current)
 			this.dt_entities[index][this.current[0]] = this.current[1];
 			this.current = this.ft_getduo();
 		}
@@ -128,12 +120,8 @@ function ft_parse_entity() {
 
 function ft_seeksize(entity, index, array) {
 		if (entity == null || entity[0] != 'LINE')
-		{
-			print('no entity');
 			return ;
-		}
 
-		log(entity)
 		if (typeof arguments.callee.x_min == 'undefined'
 			&& typeof entity[10] != null)
 			arguments.callee.x_min = parseInt(entity[10]);
@@ -245,20 +233,29 @@ function ft_shape(entity, index) {
 		group.add(this.kt_shapes[index]);
 	};
 
+function ft_toJPEG()
+{
+	return this.kt_layer.toImage({
+		mimeType : "image/png",
+		x:0,
+		y:0,
+		width: this.width + 2,
+		height: this.height + 2,
+		callback: function(img) {
+				MyImage = img
+		}
+	});
+};
+
 function ft_toKinetic(bool) {
-		log('x_min: ' + this.ft_seeksize.x_min)
-		log('x_max: ' + this.ft_seeksize.x_max)
-		log('y_min: ' + this.ft_seeksize.y_min)
-		log('y_max: ' + this.ft_seeksize.y_max)
-		log('height: ' + this.height)
-		log('width: ' + this.width)
 		if (document.getElementById('container'))
 		{
-			this.kt_stage = new Kinetic.Stage({
-				container: 'container',
-				width: this.width + 2,
-				height: this.height + 2
-			});
+			if (bool == 'stage')
+				this.kt_stage = new Kinetic.Stage({
+					container: 'container',
+					width: this.width + 2,
+					height: this.height + 2
+				});
 			this.kt_layer = new Kinetic.Layer({});
 			this.kt_groups = [];
 			this.kt_shapes = [];
@@ -269,26 +266,16 @@ function ft_toKinetic(bool) {
 			for (i in this.kt_groups) {
 				this.kt_layer.add(this.kt_groups[i]);
 			};
-			if (bool == true)
+			if (bool == 'stage')
 				this.kt_stage.add(this.kt_layer)
-			this.img = Monlayer.toImage({
-				mimeType : "image/png",
-				x:0,
-				y:0,
-				width: this.width,
-				height: this.height,
-				callback: function(img) {
-                    MyImage=img;
 
-
-        }
-    });
+			this.ft_toJPEG()
 		}
 		else
 			log('provide container plz')
-	};
+};
 
-function DXF(BinaryString) {
+function DXF(BinaryString, bool) {
 	this.str = BinaryString;
 
 	// DATA
@@ -317,6 +304,7 @@ function DXF(BinaryString) {
 	this.ft_get_group = ft_get_group;
 	this.ft_shape = ft_shape;
 	this.ft_toKinetic = ft_toKinetic;
+	this.ft_toJPEG = ft_toJPEG;
 
 	// CONSTRUCTOR
 	this.ft_toarray();
@@ -327,7 +315,7 @@ function DXF(BinaryString) {
 	this.ft_seeksize.y_max = undefined
 	this.current = this.ft_getduo();
 	this.ft_parse();
-	this.ft_toKinetic(true);
+	this.ft_toKinetic(bool);
 
 
 	log(this);
