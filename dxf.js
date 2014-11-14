@@ -210,13 +210,13 @@ function ft_parse() {
 		this.height = this.ft_seeksize.y_max - this.ft_seeksize.y_min;
 	};
 
-function ft_get_layer(layer_name) {
-		if (!this.kt_layers[layer_name])
-			this.kt_layers[layer_name] = new Kinetic.Layer(
+function ft_get_group(group_name) {
+		if (!this.kt_groups[group_name])
+			this.kt_groups[group_name] = new Kinetic.Group(
 				{
-					name: layer_name,
+					name: group_name,
 				});
-		return this.kt_layers[layer_name]
+		return this.kt_groups[group_name]
 	};
 
 function ft_shape(entity, index) {
@@ -224,7 +224,7 @@ function ft_shape(entity, index) {
 		var y_min = this.ft_seeksize.y_min;
 
 		if (entity[8])
-			var layer = this.ft_get_layer(entity[8]);
+			var group = this.ft_get_group(entity[8]);
 			this.kt_shapes[index] = new Kinetic.Shape({
 			name: entity[5],
 			x: 0,
@@ -232,20 +232,20 @@ function ft_shape(entity, index) {
 			fill: 'red',
 			drawFunc: function(context) {
 				context.moveTo(
-					parseInt(entity[10]) - x_min,
-					parseInt(entity[20]) - y_min
+					parseInt(entity[10]) - x_min + 1,
+					parseInt(entity[20]) - y_min + 1
 					);
 				context.lineTo(
-					parseInt(entity[11]) - x_min,
-					parseInt(entity[21]) - y_min
+					parseInt(entity[11]) - x_min + 1,
+					parseInt(entity[21]) - y_min + 1
 					);
 				context.stroke();
 			}
 		});
-		layer.add(this.kt_shapes[index]);
+		group.add(this.kt_shapes[index]);
 	};
 
-function ft_toKinetic() {
+function ft_toKinetic(bool) {
 		log('x_min: ' + this.ft_seeksize.x_min)
 		log('x_max: ' + this.ft_seeksize.x_max)
 		log('y_min: ' + this.ft_seeksize.y_min)
@@ -256,18 +256,33 @@ function ft_toKinetic() {
 		{
 			this.kt_stage = new Kinetic.Stage({
 				container: 'container',
-				width: this.width + 1,
-				height: this.height + 1
+				width: this.width + 2,
+				height: this.height + 2
 			});
+			this.kt_layer = new Kinetic.Layer({});
+			this.kt_groups = [];
 			this.kt_shapes = [];
-			this.kt_layers = [];
 			for (var i = 0; i < this.dt_entities.length; i++) {
 				if (this.dt_entities[i][0] == 'LINE') // RESTRICTIONS HERE
 					this.ft_shape(this.dt_entities[i], i);
 			};
-			for (i in this.kt_layers) {
-				this.kt_stage.add(this.kt_layers[i]);
+			for (i in this.kt_groups) {
+				this.kt_layer.add(this.kt_groups[i]);
 			};
+			if (bool == true)
+				this.kt_stage.add(this.kt_layer)
+			this.img = Monlayer.toImage({
+				mimeType : "image/png",
+				x:0,
+				y:0,
+				width: this.width,
+				height: this.height,
+				callback: function(img) {
+                    MyImage=img;
+
+
+        }
+    });
 		}
 		else
 			log('provide container plz')
@@ -299,7 +314,7 @@ function DXF(BinaryString) {
 
 	this.ft_seeksize = ft_seeksize;
 	this.ft_parse = ft_parse;
-	this.ft_get_layer = ft_get_layer;
+	this.ft_get_group = ft_get_group;
 	this.ft_shape = ft_shape;
 	this.ft_toKinetic = ft_toKinetic;
 
@@ -309,9 +324,11 @@ function DXF(BinaryString) {
 	this.ft_seeksize.x_min = undefined
 	this.ft_seeksize.x_max = undefined
 	this.ft_seeksize.y_min = undefined
-	this.ft_seeksize.y_max
+	this.ft_seeksize.y_max = undefined
 	this.current = this.ft_getduo();
 	this.ft_parse();
+	this.ft_toKinetic(true);
+
 
 	log(this);
 }
