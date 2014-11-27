@@ -39,7 +39,7 @@ function ft_listener() {
 	reader.onloadend = function (evt) {
 		if (evt.target.readyState == FileReader.DONE) {
 			// dxf = new DXF(evt.target.result, 'stage')
-			dxf = new DXF(evt.target.result, 'jpeg')
+			dxf = new DXF(evt.target.result, 'stage')
 		}
 	};
 	reader.readAsBinaryString(file);
