@@ -117,58 +117,40 @@ function ft_parse_entity() {
 		}
 	}
 
+function ft_upper(arg, val) {
+	if (typeof arg == 'undefined' && typeof val != null)
+		return (parseInt(val));
+	if (parseInt(arg) > parseInt(val))
+		return (parseInt(val));
+	return (arg)
+}
+
+function ft_lower(arg, val) {
+	if (typeof arg == 'undefined' && typeof val != null)
+		return (parseInt(val));
+	if (parseInt(arg) < parseInt(val))
+		return (parseInt(val));
+	return (arg)
+}
 
 function ft_seeksize(entity, index, array) {
-		if (entity == null || entity[0] != 'LINE')
+		if (entity == null)
+			return ;
+		else if (entity[0] != 'LINE' && entity[0] != 'MTEXT')
 			return ;
 
-		if (typeof arguments.callee.x_min == 'undefined'
-			&& typeof entity[10] != null)
-			arguments.callee.x_min = parseInt(entity[10]);
-		else if (parseInt(arguments.callee.x_min) > parseInt(entity[10]))
-			arguments.callee.x_min = parseInt(entity[10]);
+		arguments.callee.x_min = ft_upper(arguments.callee.x_min, entity[10])
+		arguments.callee.x_max = ft_lower(arguments.callee.x_max, entity[10])
+		arguments.callee.y_min = ft_upper(arguments.callee.y_min, entity[20])
+		arguments.callee.y_max = ft_lower(arguments.callee.y_max, entity[20])
 
-		if (typeof arguments.callee.x_max == 'undefined'
-			&& typeof entity[10] != null)
-			arguments.callee.x_max = parseInt(entity[10]);
-		else if (parseInt(arguments.callee.x_max) < parseInt(entity[10]))
-			arguments.callee.x_max = parseInt(entity[10]);
-
-		if (typeof arguments.callee.y_min == 'undefined'
-			&& typeof entity[20] != null)
-			arguments.callee.y_min = parseInt(entity[20]);
-		else if (parseInt(arguments.callee.y_min) > parseInt(entity[20]))
-			arguments.callee.y_min = parseInt(entity[20]);
-
-		if (typeof arguments.callee.y_max == 'undefined'
-			&& typeof entity[20] != null)
-			arguments.callee.y_max = parseInt(entity[20]);
-		else if (parseInt(arguments.callee.y_max) < parseInt(entity[20]))
-			arguments.callee.y_max = parseInt(entity[20]);
-
-		if (typeof arguments.callee.x_min == 'undefined'
-			&& typeof entity[11] != null)
-			arguments.callee.x_min = parseInt(entity[11]);
-		else if (parseInt(arguments.callee.x_min) > parseInt(entity[11]))
-			arguments.callee.x_min = parseInt(entity[11]);
-
-		if (typeof arguments.callee.x_max == 'undefined'
-			&& typeof entity[11] != null)
-			arguments.callee.x_max = parseInt(entity[11]);
-		else if (parseInt(arguments.callee.x_max) < parseInt(entity[11]))
-			arguments.callee.x_max = parseInt(entity[11]);
-
-		if (typeof arguments.callee.y_min == 'undefined'
-			&& typeof entity[21] != null)
-			arguments.callee.y_min = parseInt(entity[21]);
-		else if (parseInt(arguments.callee.y_min) > parseInt(entity[21]))
-			arguments.callee.y_min = parseInt(entity[21]);
-
-		if (typeof arguments.callee.y_max == 'undefined'
-			&& typeof entity[21] != null)
-			arguments.callee.y_max = parseInt(entity[21]);
-		else if (parseInt(arguments.callee.y_max) < parseInt(entity[21]))
-			arguments.callee.y_max = parseInt(entity[21]);
+		if (entity[0] == 'LINE')
+		{
+			arguments.callee.x_min = ft_upper(arguments.callee.x_min, entity[11])
+			arguments.callee.x_max = ft_lower(arguments.callee.x_max, entity[11])
+			arguments.callee.y_min = ft_upper(arguments.callee.y_min, entity[21])
+			arguments.callee.y_max = ft_lower(arguments.callee.y_max, entity[21])
+		}
 	}
 
 function ft_parse() {
@@ -207,29 +189,72 @@ function ft_get_group(group_name) {
 		return this.kt_groups[group_name]
 	};
 
-function ft_shape(entity, index) {
+function ft_shape_line(entity, index) {
 		var x_min = this.ft_seeksize.x_min;
 		var y_min = this.ft_seeksize.y_min;
 
 		if (entity[8])
 			var group = this.ft_get_group(entity[8]);
-			this.kt_shapes[index] = new Kinetic.Shape({
+		this.kt_shapes[index] = new Kinetic.Shape({
+		name: entity[5],
+		x: 0,
+		y: 0,
+		fill: 'red',
+		drawFunc: function(context) {
+			context.moveTo(
+				parseInt(entity[10]) - x_min + 100,
+				parseInt(entity[20]) - y_min + 100
+				);
+			context.lineTo(
+				parseInt(entity[11]) - x_min + 100,
+				parseInt(entity[21]) - y_min + 100
+				);
+			context.stroke();
+		}
+		});
+		group.add(this.kt_shapes[index]);
+	};
+
+function ft_getdot(str){
+	var i = 0;
+	var len = str.length
+
+	while (str[i] && str[i] != ';')
+		i += 1;
+	if (i == len)
+		return 0;
+	else
+		return i + 1;
+}
+
+function ft_regexion(str) {
+	var tmp = str.match(/.?;(.+)\}?$/)
+	if (tmp == null)
+		return str
+	else
+		return ft_regexion(tmp[1])
+}
+
+function ft_shape_text(entity, index) {
+		var x_min = this.ft_seeksize.x_min;
+		var y_min = this.ft_seeksize.y_min;
+
+		if (entity[8])
+			var group = this.ft_get_group(entity[8]);
+		this.kt_shapes[index] = new Kinetic.Shape({
 			name: entity[5],
 			x: 0,
 			y: 0,
 			fill: 'red',
 			drawFunc: function(context) {
-				context.moveTo(
-					parseInt(entity[10]) - x_min + 1,
-					parseInt(entity[20]) - y_min + 1
-					);
-				context.lineTo(
-					parseInt(entity[11]) - x_min + 1,
-					parseInt(entity[21]) - y_min + 1
-					);
-				context.stroke();
+				context.fillText(
+					ft_regexion(entity[1]).replace(/\}/, "").replace(/\\./g, " "),
+					parseInt(entity[10]) - x_min + 100,
+					parseInt(entity[20]) - y_min + 100
+				);
 			}
 		});
+		print(group)
 		group.add(this.kt_shapes[index]);
 	};
 
@@ -253,15 +278,17 @@ function ft_toKinetic(bool) {
 			if (bool == 'stage')
 				this.kt_stage = new Kinetic.Stage({
 					container: 'container',
-					width: this.width + 2,
-					height: this.height + 2
+					width: this.width + 200,
+					height: this.height + 200
 				});
 			this.kt_layer = new Kinetic.Layer({});
 			this.kt_groups = [];
 			this.kt_shapes = [];
-			for (var i = 0; i < this.dt_entities.length; i++) {
-				if (this.dt_entities[i][0] == 'LINE') // RESTRICTIONS HERE
-					this.ft_shape(this.dt_entities[i], i);
+			for (var i = 0; i < this.dt_entities.length; i++) { // ENTITY SELECTION TO SHAPE
+				if (this.dt_entities[i][0] == 'LINE')
+					this.ft_shape_line(this.dt_entities[i], i);
+				else if (this.dt_entities[i][0] == 'MTEXT')
+					this.ft_shape_text(this.dt_entities[i], i);
 			};
 			for (i in this.kt_groups) {
 				this.kt_layer.add(this.kt_groups[i]);
@@ -302,7 +329,8 @@ function DXF(BinaryString, bool) {
 	this.ft_seeksize = ft_seeksize;
 	this.ft_parse = ft_parse;
 	this.ft_get_group = ft_get_group;
-	this.ft_shape = ft_shape;
+	this.ft_shape_line = ft_shape_line;
+	this.ft_shape_text = ft_shape_text;
 	this.ft_toKinetic = ft_toKinetic;
 	this.ft_toJPEG = ft_toJPEG;
 
