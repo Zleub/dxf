@@ -441,6 +441,6 @@ function DXF(BinaryString, bool) {
 	this.ft_parse();
 	this.ft_toKinetic(bool);
 
-
+	print('Hello')
 	log(this);
 }
