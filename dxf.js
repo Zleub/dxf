@@ -195,23 +195,15 @@ function ft_shape_line(entity, index) {
 
 	if (entity[8])
 		var group = this.ft_get_group(entity[8]);
-	this.kt_shapes[index] = new Kinetic.Shape({
-		name: entity[5],
-		x: 0,
-		y: 0,
-		fill: 'red',
-		drawFunc: function(context) {
-			context.moveTo(
-				parseInt(entity[10]) - x_min + 100,
-				parseInt(entity[20]) - y_min + 100
-				);
-			context.lineTo(
-				parseInt(entity[11]) - x_min + 100,
-				parseInt(entity[21]) - y_min + 100
-				);
-			context.stroke();
-		}
-	});
+	this.kt_shapes[index] = new Kinetic.Line({
+		points: [
+			parseInt(entity[10]) - x_min + 99,
+			parseInt(entity[20]) - y_min + 99,
+			parseInt(entity[11]) - x_min + 99,
+			parseInt(entity[21]) - y_min + 99
+		],
+		stroke: 'black'
+	})
 	group.add(this.kt_shapes[index]);
 }
 
@@ -241,21 +233,33 @@ function ft_shape_text(entity, index) {
 
 	if (entity[8])
 		var group = this.ft_get_group(entity[8]);
-	this.kt_shapes[index] = new Kinetic.Shape({
+	this.kt_shapes[index] = new Kinetic.Text({
 		name: entity[5],
-		x: 0,
-		y: 0,
-		fill: 'red',
-		drawFunc: function(context) {
-			context.fillText(
-				// entity[1],
-					ft_regexion(entity[1]).replace(/\}/, "").replace(/\\./g, " "),
-					parseInt(entity[10]) - x_min + 100,
-					parseInt(entity[20]) - y_min + 100
-					);
-		}
+		x: parseInt(entity[10]) - x_min + 99,
+		y: parseInt(entity[20]) - y_min + 99,
+		fontSize: 10,
+		fontFamily: 'Calibri',
+		fill: 'black',
+		text: entity[1]
 	});
-	print(group)
+	group.add(this.kt_shapes[index]);
+}
+
+function ft_shape_mtext(entity, index) {
+	var x_min = this.ft_seeksize.x_min;
+	var y_min = this.ft_seeksize.y_min;
+
+	if (entity[8])
+		var group = this.ft_get_group(entity[8]);
+	this.kt_shapes[index] = new Kinetic.Text({
+		name: entity[5],
+		x: parseInt(entity[10]) - x_min + 99,
+		y: parseInt(entity[20]) - y_min + 99,
+		fontSize: 10,
+		fontFamily: 'Calibri',
+		fill: 'green',
+		text: entity[1]
+	});
 	group.add(this.kt_shapes[index]);
 }
 
@@ -288,7 +292,7 @@ function ft_toKinetic(bool) {
 			if (this.dt_entities[i][0] == 'LINE')
 				this.ft_shape_line(this.dt_entities[i], i);
 			else if (this.dt_entities[i][0] == 'MTEXT')
-				this.ft_shape_text(this.dt_entities[i], i);
+				this.ft_shape_mtext(this.dt_entities[i], i);
 			else if (this.dt_entities[i][0] == 'TEXT')
 				this.ft_shape_text(this.dt_entities[i], i);
 		};
@@ -333,13 +337,14 @@ function DXF(BinaryString, bool) {
 	this.ft_get_group = ft_get_group;
 	this.ft_shape_line = ft_shape_line;
 	this.ft_shape_text = ft_shape_text;
+	this.ft_shape_mtext = ft_shape_mtext;
 	this.ft_toKinetic = ft_toKinetic;
 	this.ft_toJPEG = ft_toJPEG;
 
 	this.ft_print = function () {
 		for (var i = 0; i < this.dt_entities.length; i++) {
 			if (this.dt_entities[i][0] == 'MTEXT' || this.dt_entities[i][0] == 'TEXT')
-				print(i + "  " + this.dt_entities[i][0] + "  " + this.dt_entities[i][1])
+				print(i + " len:" + this.dt_entities[i][1].length + " " + this.dt_entities[i][0] + "  " + this.dt_entities[i][1])
 		};
 	}
 
