@@ -222,7 +222,7 @@ function ft_shape_polyline(entity) {
 	var y_min = this.ft_seeksize.y_min;
 
 	if (entity[6] == 'HIDDEN')
-		;
+		return ;
 	if (entity[8])
 		var group = this.ft_get_group(entity[8]);
 
@@ -256,11 +256,11 @@ function ft_shape_arc(entity) {
 	var len = this.kt_shapes.push( new Kinetic.Arc({
 		x: parseInt(entity[10]) - x_min + 99,
 		y: parseInt(entity[20]) - y_min + 99,
-  innerRadius: entity[40],
-  stroke: 'black',
-  angle: parseInt(entity[51]) - parseInt(entity[50]),
-  rotationDeg: parseInt(entity[50])
-}))
+		innerRadius: entity[40],
+		stroke: 'black',
+		angle: parseInt(entity[51]) - parseInt(entity[50]),
+		rotationDeg: parseInt(entity[50])
+	}))
 	group.add(this.kt_shapes[len - 1]);
 }
 
@@ -376,7 +376,7 @@ function ft_toKinetic(bool) {
 			else if (this.dt_entities[i][0] == 'ARC')
 				this.ft_shape_arc(this.dt_entities[i]);
 			else if (this.dt_entities[i][0] == 'DIMENSION')
-				print(this.dt_entities[i])
+				; // print(this.dt_entities[i])
 			else
 				print(this.dt_entities[i][0])
 			// else if (this.dt_entities[i][0] == 'LWPOLYLINE')
@@ -429,13 +429,6 @@ function DXF(BinaryString, bool) {
 	this.ft_shape_mtext = ft_shape_mtext;
 	this.ft_toKinetic = ft_toKinetic;
 	this.ft_toJPEG = ft_toJPEG;
-
-	this.ft_print = function () {
-		for (var i = 0; i < this.dt_entities.length; i++) {
-			if (this.dt_entities[i][0] == 'MTEXT' || this.dt_entities[i][0] == 'TEXT')
-				print(i + " len:" + this.dt_entities[i][1].length + " " + this.dt_entities[i][0] + "  " + this.dt_entities[i][1])
-		};
-	}
 
 	// CONSTRUCTOR
 	this.ft_toarray();
