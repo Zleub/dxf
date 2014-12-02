@@ -112,7 +112,17 @@ function ft_parse_entity() {
 	this.current = this.ft_getduo();
 	while (this.current[0] != '0')
 	{
-		this.dt_entities[index][this.current[0]] = this.current[1];
+		if (typeof this.dt_entities[index][this.current[0]] == 'undefined')
+			this.dt_entities[index][this.current[0]] = this.current[1];
+		else if (typeof this.dt_entities[index][this.current[0]] == 'string')
+		{
+			var tmp = this.dt_entities[index][this.current[0]];
+			this.dt_entities[index][this.current[0]] = [];
+			this.dt_entities[index][this.current[0]].push(tmp);
+			this.dt_entities[index][this.current[0]].push(this.current[1]);
+		}
+		else if (typeof this.dt_entities[index][this.current[0]] == 'object')
+			this.dt_entities[index][this.current[0]].push(this.current[1]);
 		this.current = this.ft_getduo();
 	}
 }
@@ -189,13 +199,13 @@ function ft_get_group(group_name) {
 	return this.kt_groups[group_name]
 }
 
-function ft_shape_line(entity, index) {
+function ft_shape_line(entity) {
 	var x_min = this.ft_seeksize.x_min;
 	var y_min = this.ft_seeksize.y_min;
 
 	if (entity[8])
 		var group = this.ft_get_group(entity[8]);
-	this.kt_shapes[index] = new Kinetic.Line({
+	var len = this.kt_shapes.push( new Kinetic.Line({
 		points: [
 			parseInt(entity[10]) - x_min + 99,
 			parseInt(entity[20]) - y_min + 99,
@@ -203,8 +213,71 @@ function ft_shape_line(entity, index) {
 			parseInt(entity[21]) - y_min + 99
 		],
 		stroke: 'black'
-	})
-	group.add(this.kt_shapes[index]);
+	}))
+	group.add(this.kt_shapes[len - 1]);
+}
+
+function ft_shape_polyline(entity) {
+	var x_min = this.ft_seeksize.x_min;
+	var y_min = this.ft_seeksize.y_min;
+
+	if (entity[6] == 'HIDDEN')
+		;
+	if (entity[8])
+		var group = this.ft_get_group(entity[8]);
+
+	if (typeof entity[10] == 'object')
+	{
+		for (var i = 0; i < entity[10].length; i++)
+		{
+			var len = this.kt_shapes.push( new Kinetic.Line({
+				points: [
+					parseInt(entity[10][i]) - x_min + 99,
+					parseInt(entity[20][i]) - y_min + 99,
+					parseInt(entity[10][i + 1]) - x_min + 99,
+					parseInt(entity[20][i + 1]) - y_min + 99
+				],
+				stroke: 'black'
+			}))
+			group.add(this.kt_shapes[len - 1]);
+		};
+	}
+	else
+		ft_shape_line(entity);
+
+}
+
+function ft_shape_arc(entity) {
+	var x_min = this.ft_seeksize.x_min;
+	var y_min = this.ft_seeksize.y_min;
+
+	if (entity[8])
+		var group = this.ft_get_group(entity[8]);
+	var len = this.kt_shapes.push( new Kinetic.Arc({
+		x: parseInt(entity[10]) - x_min + 99,
+		y: parseInt(entity[20]) - y_min + 99,
+  innerRadius: entity[40],
+  stroke: 'black',
+  angle: parseInt(entity[51]) - parseInt(entity[50]),
+  rotationDeg: parseInt(entity[50])
+}))
+	group.add(this.kt_shapes[len - 1]);
+}
+
+
+function ft_shape_circle(entity) {
+	var x_min = this.ft_seeksize.x_min;
+	var y_min = this.ft_seeksize.y_min;
+
+	if (entity[8])
+		var group = this.ft_get_group(entity[8]);
+	var len = this.kt_shapes.push( new Kinetic.Circle({
+		x: parseInt(entity[10]) - x_min + 99,
+		y: parseInt(entity[20]) - y_min + 99,
+		radius: parseInt(entity[40]),
+		stroke: 'black'
+	}))
+	group.add(this.kt_shapes[len - 1]);
 }
 
 function ft_getdot(str) {
@@ -227,13 +300,13 @@ function ft_regexion(str) {
 		return ft_regexion(tmp[1])
 }
 
-function ft_shape_text(entity, index) {
+function ft_shape_text(entity) {
 	var x_min = this.ft_seeksize.x_min;
 	var y_min = this.ft_seeksize.y_min;
 
 	if (entity[8])
 		var group = this.ft_get_group(entity[8]);
-	this.kt_shapes[index] = new Kinetic.Text({
+	var len = this.kt_shapes.push( new Kinetic.Text({
 		name: entity[5],
 		x: parseInt(entity[10]) - x_min + 99,
 		y: parseInt(entity[20]) - y_min + 99,
@@ -241,26 +314,26 @@ function ft_shape_text(entity, index) {
 		fontFamily: 'Calibri',
 		fill: 'black',
 		text: entity[1]
-	});
-	group.add(this.kt_shapes[index]);
+	}));
+	group.add(this.kt_shapes[len - 1]);
 }
 
-function ft_shape_mtext(entity, index) {
+function ft_shape_mtext(entity) {
 	var x_min = this.ft_seeksize.x_min;
 	var y_min = this.ft_seeksize.y_min;
 
 	if (entity[8])
 		var group = this.ft_get_group(entity[8]);
-	this.kt_shapes[index] = new Kinetic.Text({
+	var len = this.kt_shapes.push( new Kinetic.Text({
 		name: entity[5],
 		x: parseInt(entity[10]) - x_min + 99,
 		y: parseInt(entity[20]) - y_min + 99,
 		fontSize: 10,
 		fontFamily: 'Calibri',
 		fill: 'green',
-		text: entity[1]
-	});
-	group.add(this.kt_shapes[index]);
+		text: ft_regexion(entity[1]).replace(/\}/, "").replace(/\\./g, " ").substr(0, 32),
+	}));
+	group.add(this.kt_shapes[len - 1]);
 }
 
 function ft_toJPEG() {
@@ -289,12 +362,25 @@ function ft_toKinetic(bool) {
 		this.kt_groups = [];
 		this.kt_shapes = [];
 		for (var i = 0; i < this.dt_entities.length; i++) { // ENTITY SELECTION TO SHAPE
+			// print(i + "  " + this.dt_entities[i][0])
 			if (this.dt_entities[i][0] == 'LINE')
-				this.ft_shape_line(this.dt_entities[i], i);
+				this.ft_shape_line(this.dt_entities[i]);
+			else if (this.dt_entities[i][0] == 'LWPOLYLINE')
+				this.ft_shape_polyline(this.dt_entities[i]);
 			else if (this.dt_entities[i][0] == 'MTEXT')
-				this.ft_shape_mtext(this.dt_entities[i], i);
+				this.ft_shape_mtext(this.dt_entities[i]);
 			else if (this.dt_entities[i][0] == 'TEXT')
-				this.ft_shape_text(this.dt_entities[i], i);
+				this.ft_shape_text(this.dt_entities[i]);
+			else if (this.dt_entities[i][0] == 'CIRCLE')
+				this.ft_shape_circle(this.dt_entities[i]);
+			else if (this.dt_entities[i][0] == 'ARC')
+				this.ft_shape_arc(this.dt_entities[i]);
+			else if (this.dt_entities[i][0] == 'DIMENSION')
+				print(this.dt_entities[i])
+			else
+				print(this.dt_entities[i][0])
+			// else if (this.dt_entities[i][0] == 'LWPOLYLINE')
+			// 	print(i + "  " + this.dt_entities[i][6])
 		};
 		for (i in this.kt_groups) {
 			this.kt_layer.add(this.kt_groups[i]);
@@ -336,6 +422,9 @@ function DXF(BinaryString, bool) {
 	this.ft_parse = ft_parse;
 	this.ft_get_group = ft_get_group;
 	this.ft_shape_line = ft_shape_line;
+	this.ft_shape_polyline = ft_shape_polyline;
+	this.ft_shape_arc = ft_shape_arc;
+	this.ft_shape_circle = ft_shape_circle;
 	this.ft_shape_text = ft_shape_text;
 	this.ft_shape_mtext = ft_shape_mtext;
 	this.ft_toKinetic = ft_toKinetic;
