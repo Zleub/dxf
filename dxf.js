@@ -207,10 +207,10 @@ function ft_shape_line(entity) {
 		var group = this.ft_get_group(entity[8]);
 	var len = this.kt_shapes.push( new Kinetic.Line({
 		points: [
-			parseInt(entity[10]) - x_min + 99,
-			parseInt(entity[20]) - y_min + 99,
-			parseInt(entity[11]) - x_min + 99,
-			parseInt(entity[21]) - y_min + 99
+			parseInt(entity[10]) - x_min,
+			parseInt(entity[20]) - y_min,
+			parseInt(entity[11]) - x_min,
+			parseInt(entity[21]) - y_min
 		],
 		stroke: 'black'
 	}))
@@ -232,10 +232,10 @@ function ft_shape_polyline(entity) {
 		{
 			var len = this.kt_shapes.push( new Kinetic.Line({
 				points: [
-					parseInt(entity[10][i]) - x_min + 99,
-					parseInt(entity[20][i]) - y_min + 99,
-					parseInt(entity[10][i + 1]) - x_min + 99,
-					parseInt(entity[20][i + 1]) - y_min + 99
+					parseInt(entity[10][i]) - x_min,
+					parseInt(entity[20][i]) - y_min,
+					parseInt(entity[10][i + 1]) - x_min,
+					parseInt(entity[20][i + 1]) - y_min
 				],
 				stroke: 'black'
 			}))
@@ -254,8 +254,8 @@ function ft_shape_arc(entity) {
 	if (entity[8])
 		var group = this.ft_get_group(entity[8]);
 	var len = this.kt_shapes.push( new Kinetic.Arc({
-		x: parseInt(entity[10]) - x_min + 99,
-		y: parseInt(entity[20]) - y_min + 99,
+		x: parseInt(entity[10]) - x_min,
+		y: parseInt(entity[20]) - y_min,
 		innerRadius: entity[40],
 		stroke: 'black',
 		angle: parseInt(entity[51]) - parseInt(entity[50]),
@@ -272,8 +272,8 @@ function ft_shape_circle(entity) {
 	if (entity[8])
 		var group = this.ft_get_group(entity[8]);
 	var len = this.kt_shapes.push( new Kinetic.Circle({
-		x: parseInt(entity[10]) - x_min + 99,
-		y: parseInt(entity[20]) - y_min + 99,
+		x: parseInt(entity[10]) - x_min,
+		y: parseInt(entity[20]) - y_min,
 		radius: parseInt(entity[40]),
 		stroke: 'black'
 	}))
@@ -308,8 +308,8 @@ function ft_shape_text(entity) {
 		var group = this.ft_get_group(entity[8]);
 	var len = this.kt_shapes.push( new Kinetic.Text({
 		name: entity[5],
-		x: parseInt(entity[10]) - x_min + 99,
-		y: parseInt(entity[20]) - y_min + 99,
+		x: parseInt(entity[10]) - x_min,
+		y: parseInt(entity[20]) - y_min,
 		fontSize: 10,
 		fontFamily: 'Calibri',
 		fill: 'black',
@@ -326,8 +326,8 @@ function ft_shape_mtext(entity) {
 		var group = this.ft_get_group(entity[8]);
 	var len = this.kt_shapes.push( new Kinetic.Text({
 		name: entity[5],
-		x: parseInt(entity[10]) - x_min + 99,
-		y: parseInt(entity[20]) - y_min + 99,
+		x: parseInt(entity[10]) - x_min,
+		y: parseInt(entity[20]) - y_min,
 		fontSize: 10,
 		fontFamily: 'Calibri',
 		fill: 'green',
@@ -355,8 +355,8 @@ function ft_toKinetic(bool) {
 		if (bool == 'stage')
 			this.kt_stage = new Kinetic.Stage({
 				container: 'container',
-				width: this.width + 200,
-				height: this.height + 200
+				width: this.width + 2,
+				height: this.height + 2
 			});
 		this.kt_layer = new Kinetic.Layer({});
 		this.kt_groups = [];
@@ -376,7 +376,7 @@ function ft_toKinetic(bool) {
 			else if (this.dt_entities[i][0] == 'ARC')
 				this.ft_shape_arc(this.dt_entities[i]);
 			else if (this.dt_entities[i][0] == 'DIMENSION')
-				; // print(this.dt_entities[i])
+				print(this.dt_entities[i])
 			else
 				print(this.dt_entities[i][0])
 			// else if (this.dt_entities[i][0] == 'LWPOLYLINE')
