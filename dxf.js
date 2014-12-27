@@ -244,7 +244,6 @@ function ft_shape_polyline(entity) {
 	}
 	else
 		ft_shape_line(entity);
-
 }
 
 function ft_shape_arc(entity) {
@@ -263,7 +262,6 @@ function ft_shape_arc(entity) {
 	}))
 	group.add(this.kt_shapes[len - 1]);
 }
-
 
 function ft_shape_circle(entity) {
 	var x_min = this.ft_seeksize.x_min;
@@ -337,6 +335,30 @@ function ft_shape_mtext(entity) {
 }
 
 function ft_toJPEG() {
+	// 0 = Unitless; 1 = Inches; 2 = Feet; 3 = Miles; 4 = Millimeters;
+	// 5 = Centimeters; 6 = Meters; 7 = Kilometers; 8 = Microinches;
+	// 9 = Mils; 10 = Yards; 11 = Angstroms; 12 = Nanometers;
+	// 13 = Microns; 14 = Decimeters; 15 = Decameters;
+	// 16 = Hectometers; 17 = Gigameters; 18 = Astronomical units;
+	// 19 = Light years; 20 = Parsecs
+	if (this.dt_header['$INSUNITS'] == 1) {
+		MyRatio = 25.4
+	}
+	if (this.dt_header['$INSUNITS'] == 2) {
+		MyRatio = 304.8
+	}
+	if (this.dt_header['$INSUNITS'] == 3) {
+		MyRatio = 0.0000006214
+	}
+	if (this.dt_header['$INSUNITS'] == 4) {
+		MyRatio = 1
+	}
+	if (this.dt_header['$INSUNITS'] == 5) {
+		MyRatio = 10
+	}
+	if (this.dt_header['$INSUNITS'] == 6) {
+		MyRatio = 1000
+	}
 	return this.kt_layer.toImage({
 		mimeType : "image/png",
 		x:0,
@@ -344,6 +366,7 @@ function ft_toJPEG() {
 		width: this.width + 2,
 		height: this.height + 2,
 		callback: function(img) {
+			print(this)
 			MyImage = img
 		}
 	});
@@ -375,12 +398,13 @@ function ft_toKinetic(bool) {
 				this.ft_shape_circle(this.dt_entities[i]);
 			else if (this.dt_entities[i][0] == 'ARC')
 				this.ft_shape_arc(this.dt_entities[i]);
-			else if (this.dt_entities[i][0] == 'DIMENSION')
-				print(this.dt_entities[i])
-			else
-				print(this.dt_entities[i][0])
-			// else if (this.dt_entities[i][0] == 'LWPOLYLINE')
-			// 	print(i + "  " + this.dt_entities[i][6])
+// 			else if (this.dt_entities[i][0] == 'DIMENSION')
+// 				print(this.dt_entities[i])
+// 			else
+// 				print(this.dt_entities[i][0])
+// 				print(this.dt_entities[i])
+// 			else if (this.dt_entities[i][0] == 'LWPOLYLINE')
+//			 	print(i + "  " + this.dt_entities[i][6])
 		};
 		for (i in this.kt_groups) {
 			this.kt_layer.add(this.kt_groups[i]);
@@ -427,6 +451,8 @@ function DXF(BinaryString, bool) {
 	this.ft_shape_circle = ft_shape_circle;
 	this.ft_shape_text = ft_shape_text;
 	this.ft_shape_mtext = ft_shape_mtext;
+
+	// USER CALL
 	this.ft_toKinetic = ft_toKinetic;
 	this.ft_toJPEG = ft_toJPEG;
 
